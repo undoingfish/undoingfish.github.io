@@ -4,75 +4,73 @@ date: 2020-05-18 20:37:00
 tags: 其它
 ---
 
-​		很久之前，看到大佬的[微信运动hook repo](https://github.com/zhengmin1989/WechatSportCheat)，但是一直没有时间和精力去尝试，于是上个周末花了点时间试了一下。
-
-​		手机型号：红米Note3全网通版本
-
-​		由于是第一次刷机，因此整个过程踩了N+的坑，但是为了避免繁杂的描述，因此挑重点描述一下，当作整个过程的小结。
+​		很久之前看到的[微信运动hook repo](https://github.com/zhengmin1989/WechatSportCheat)，在这次周末进行了尝试。使用的手机型号是红米Note3全网通版本。由于是第一次刷机，因此整个过程比较曲折。为避免繁杂的描述，所以只挑重点总结。
 
 ​		首先刷入TWRP，下载链接见[红米NOTE3全网通|Kenzo/Kate||TWRP](https://www.xiaomi.cn/post/4126589)，手机关机之后按【电源键+音量上】，出现如下图的画面后，打开下载好的TWRP文件，运行文件中的脚本，便可以自动刷入：
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518205459056.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/1.png)
 
-​		待手机重启后，会自动进入TWRP系统。关于这个系统的介绍，见维基百科词条[**Team Win Recovery Project**（**TWRP**）](https://zh.wikipedia.org/wiki/TWRP)。刷完TWRP后，便是获取系统的root权限。获取系统的root权限，可以使用TWRP内置的SuperSU或者Magisk。我选择了后者的Magisk-v20.0版本，于是迈向了深坑……坑里面有啥，请接着往下看……
+​		待手机重启后，会自动进入TWRP系统。关于TWRP系统的介绍，见维基百科词条[**Team Win Recovery Project**（**TWRP**）](https://zh.wikipedia.org/wiki/TWRP)。刷完TWRP后，开始获取系统的root权限。获取root权限可以使用TWRP内置的SuperSU或者Magisk。于是用Magisk-v20.0获取到了root权限。
 
-​		获取了root权限后，就是安装xposed框架啦。在这里，坑开始出现了，由于对安卓系统不熟悉，什么MIUI版本啊、安卓系统版本啊，搞得稀里糊涂的，一开始看到MIUI10，还以为是Android10……趟入深坑，以为要安装EdXposed，于是安装之后重启导致卡米……后来好不容易知道了两者的不同之处，又根据搜索结果下载了MIUI修改版的xposed框架，安装之后，心想这下不会卡米了吧……然而等了大概四十多分钟，还是没起来，于是终于可以断定又卡米了……
+​		获取了root权限后，安装xposed框架。尝试安装EdXposed，然而安装之后重启导致卡米……尝试MIUI修改版的xposed框架，安装之后等了大概四十多分钟，还是没起来，断定卡米，怀疑是xposed框架的安装存在一定的限制，例如框架版本号和系统版本号存在不兼容的情况。因此断定此路不通，放弃此法，寻找其他出路。
 
-​		正当本人一筹莫展之际，百无聊赖地搜索，发现好多人遇到了和我一样的情况，但是确实是有人成功刷入了xposed框架的，地址如下：[MIUI9 红米note3全网通（KENZO）Xposed详细安装教程](https://www.xiaomi.cn/post/4943600)，咦？我的是MIUI10，难道MIUI9可以？再结合原帖的步骤和本人自己的步骤，也没错啊，那问题出在哪里了呢？那要不要用MIUI9来试一下？得，死马当做活马医了，但是，MIUI9在哪里可以下载到呢？于是我想到了百度贴吧……搜索历史如下：
+​		继续搜索后，发现还是有人遇到了一样的情况，并且确实成功刷入了xposed框架，地址如下：[MIUI9 红米note3全网通（KENZO）Xposed详细安装教程](https://www.xiaomi.cn/post/4943600)。然而当前的系统是MIUI10，如果按照教程的方法需要先刷成MIUI9，便在百度贴吧搜索MIUI9的相关信息：
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518213242590.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/2.png)
 
 图中标红的记录，是开始出现转机的时刻，点进去：
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518213438245.png)		
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/3.png)		
 
-再点进去：
+继续找：
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518213542109.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/4.png)
 
-MIUI9？MIUIPRO？Android7.0？？等等，我手机里面的版本是啥？Android6.0？？
+MIUI9？MIUIPRO？Android7.0？？对比一下我手机里面的版本，是Android6.0版本。
 
 接着往下看：
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518213738363.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/5.png)
 
-再点进去，然后往下翻（链接/s/15m9uIY1ORBURK4NpvNOGbQ码 5qe9）：
+再点进去，然后往下翻，找到某个百度云盘链接：
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518213840706.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/6.png)
 
-nice，点进去一看，瞬间惊呆了……真是踏破铁鞋无觅处啊。下载下来，拷贝到TWRP系统里面，怀着忐忑的心情安装好系统，再结合之前的步骤，root、安装xposed框架。
+链接中的文件如下图所示。下载下来，拷贝到TWRP系统里面，安装好系统，重复开始的步骤，root、安装xposed框架。
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518214226165.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/7.png)
 
-成功了。
+成功。
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518215445271.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/8.png)
 
-于是装好微信hook框架，重启后开启小米运动，摇几下，再同步微信运动，搞定：
+装好微信hook框架，重启后开启小米运动，摇动手机，同步微信运动，搞定：
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518215829915.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/9.png)
 
-​		但是美中不足，这样的步数一看就知道，太假了，得改一下。由于不会安卓开发，因此大佬即使给了源代码也不会编译成apk……实在是太菜了，折腾了好久，终于放弃了。只好走另一条路：反编译——>修改——>再重新编译。
+​		但是步数显得比较刻意，需要改一下。尝试使用repo中的源代码编译成apk……折腾好久没有成功，遂放弃。由于repo中提供了apk源文件，因此考虑走另一条路：反编译——>修改smali文件——>重新编译成apk。
 
-​		源代码中的步数修改是直接在手机系统自带的计数器记录的步数基础上*1000，然后上传到微信运动（但是为什么我会知道这个，应该是之前搜到的文章里面有提到过，再加上代码不多，因此很容易就找到了这里，代码路径是[sourcecode](https://github.com/zhengmin1989/WechatSportCheat/tree/master/sourcecode)/[xposedwechat](https://github.com/zhengmin1989/WechatSportCheat/tree/master/sourcecode/xposedwechat)/[src](https://github.com/zhengmin1989/WechatSportCheat/tree/master/sourcecode/xposedwechat/src)/[com](https://github.com/zhengmin1989/WechatSportCheat/tree/master/sourcecode/xposedwechat/src/com)/[example](https://github.com/zhengmin1989/WechatSportCheat/tree/master/sourcecode/xposedwechat/src/com/example)/[xposedwechat](https://github.com/zhengmin1989/WechatSportCheat/tree/master/sourcecode/xposedwechat/src/com/example/xposedwechat)/**wechat.java** ）：
+​		源代码中的步数修改是直接在手机系统自带的计数器记录的步数基础上*1000，然后上传到微信运动。repo中的代码不多，很容易就找到了这里，代码路径是：
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518220357451.png)
+[sourcecode](https://github.com/zhengmin1989/WechatSportCheat/tree/master/sourcecode)/[xposedwechat](https://github.com/zhengmin1989/WechatSportCheat/tree/master/sourcecode/xposedwechat)/[src](https://github.com/zhengmin1989/WechatSportCheat/tree/master/sourcecode/xposedwechat/src)/[com](https://github.com/zhengmin1989/WechatSportCheat/tree/master/sourcecode/xposedwechat/src/com)/[example](https://github.com/zhengmin1989/WechatSportCheat/tree/master/sourcecode/xposedwechat/src/com/example)/[xposedwechat](https://github.com/zhengmin1989/WechatSportCheat/tree/master/sourcecode/xposedwechat/src/com/example/xposedwechat)/**wechat.java** 
 
-​		于是将apk文件反编译一下，得到如下文件夹：
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/10.png)
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518220647035.png)
+​		将apk文件反编译得到如下文件夹：
 
-​		再从网上搜一下，了解到反编译得到的代码是在smali文件夹中（smali文件就相当于x86系统下的汇编）。那就好办了，凭着感觉，找到这个路径（说是感觉，其实是凭着路径文件的命名来找的，有一些相似之处）：
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/11.png)
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518220944635.png)
+​		进入反编译后的smali文件夹：
 
-​		看来smali文件生成还是有规律的，那肯定是先打开两个含wechat.smali的文件看一看咯。由于只是想把1000改成一个比较自然的数，因此找一下1000的十六进制0x3e8就可以了。打开两个文件，在下面的文件里没搜到“3e8”，又在上面的文件里搜了一下，哎？还真就有：
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/12.png)
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518221510257.png)
+​		smali文件生成貌似有一些规律，先打开两个含wechat的文件寻找。由于只是想把1000改成一个比较自然的数，因此找一下1000的十六进制0x3e8就可以了。在wechat$1.smali文件里搜到“3e8”：
 
-​		从上下文的关键字来看，就是它了，改成0x46e，重新编译，传到手机，发现安装不上，发现是没有签名，于是又打上签名，安装成功了！再摇几下手机：
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/13.png)
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/image-20200518221917122.png)
+​		将其改成0x46e，重新编译，传到手机，发现安装不上，原来是没有签名，便打上签名，安装成功。再摇手机同步微信运动：
+
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/2020/05/18/%E5%BE%AE%E4%BF%A1%E8%BF%90%E5%8A%A8hook/14.png)
 
 编译过程：
 
