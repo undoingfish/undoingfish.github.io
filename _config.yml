@@ -7,7 +7,7 @@ title: undoingfish的博客
 subtitle: ''
 description: ''
 keywords:
-author: John Doe
+author: undoingfish
 language: en
 timezone: ''
 
@@ -18,7 +18,7 @@ root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
-  trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
+  trailing_index: false # Set to false to remove trailing 'index.html' from permalinks
   trailing_html: true # Set to false to remove trailing '.html' from permalinks
 
 # Directory
@@ -98,11 +98,11 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: polk
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repository: https://github.com/undoingfish/undoingfish.github.io
+  repository: git@github.com:undoingfish/undoingfish.github.io.git
   branch: main
