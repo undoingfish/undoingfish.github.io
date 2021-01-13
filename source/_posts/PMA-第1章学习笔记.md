@@ -398,11 +398,29 @@ HRESULT DllUnregisterServer();
 
 - **[EnumProcesses](https://docs.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-enumprocesses)**
 
-用于检索系统中每个进程的过程标识符。（此项Microsoft Docs中已404）
+用于检索系统中每个进程的过程标识符。
+
+```
+BOOL EnumProcessModules(
+  HANDLE  hProcess,
+  HMODULE *lphModule,
+  DWORD   cb,
+  LPDWORD lpcbNeeded
+);
+```
 
 - **[EnumProcessModules](https://docs.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-enumprocessmodules)**
 
-检索特定进程中的每个模块。（此项Microsoft Docs中已404）
+检索特定进程中的每个模块。
+
+```
+BOOL EnumProcessModules(
+  HANDLE  hProcess,
+  HMODULE *lphModule,
+  DWORD   cb,
+  LPDWORD lpcbNeeded
+);
+```
 
 - **FindFirstFile/FindNextFile**
 
