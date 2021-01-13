@@ -28,7 +28,7 @@ tags: Practical Malware Analysis
 
 ***PE文件的分节***
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\1.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/08/PMA-%E7%AC%AC1%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.png)
 
 ***链接库与函数***
 
