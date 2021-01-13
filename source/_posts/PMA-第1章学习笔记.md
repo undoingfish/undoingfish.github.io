@@ -974,7 +974,7 @@ void OutputDebugStringW(
 );
 ```
 
-- **[PeekNamedPide](https://docs.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-peeknamedpipe)**
+- **[PeekNamedPipe](https://docs.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-peeknamedpipe)**
 
 可从命名管道中复制数据至缓冲区，复制时不删除源数据。常用于反向shell。
 
