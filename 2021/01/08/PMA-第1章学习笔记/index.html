@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>PMA 第1章学习笔记 - undoingfish的博客</title>
+  <link rel="icon" href="https://i.imgur.com/SrZt9VU.jpg" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=Practical Malware Analysis>
+  
+  
+  
+    <link rel="alternate" href="/atom.xml " title="undoingfish的博客" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">undoingfish的博客</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/summary" class="menu-item-link">Summary</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">RSS</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">PMA 第1章学习笔记</h1>
+  </div>
+
+  <!-- 文章目录 -->
+  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80%E6%8A%80%E6%9C%AF"><span class="toc-text">静态分析基础技术</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-text">相关概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E4%B8%AD%E5%B8%B8%E8%A7%81%E7%9A%84Windows%E5%87%BD%E6%95%B0%E5%88%97%E8%A1%A8"><span class="toc-text">恶意代码中常见的Windows函数列表</span></a></li></ol>
+
+  <div class="post-content">
+    <h4 id="静态分析基础技术"><a href="#静态分析基础技术" class="headerlink" title="静态分析基础技术"></a><strong>静态分析基础技术</strong></h4><p>1、通过反病毒引擎扫描：<a target="_blank" rel="noopener" href="https://www.virustotal.com/">https://www.virustotal.com/</a></p>
+<p>2、计算恶意代码的哈希值，例如MD5值、SHA-1值。</p>
+<p>3、使用Strings程序搜索文件中的可打印字符。</p>
+<p>4、可使用PEiD检测恶意代码本身是否被加壳，以及被加壳的种类。</p>
+<p>5、可使用Dependency Walker搜索恶意代码中的动态链接函数，以分析程序所使用的导入函数和导出函数。</p>
+<p>6、使用PEview工具分析恶意程序的PE文件头部，例如在IMAGE_NT_HEADERS–&gt;IMAGE_FILE_HEADER项中，可以查看到可执行文件的编译时间，但编译时间有可能是伪造的。另外，IMAGE_NT_HEADERS–&gt;IMAGE_FILE_HEADER中还可以通过Subsystem描述来判断本程序是控制台程序还是图形界面程序。在IMAGE_SECTION_HEADER中，可以对比分节信息的虚拟大小和原始数据大小之间的差距来判断文件是否加壳。</p>
+<p>7、可以用Resource Hacker工具来查看资源节（.rsrc节），并提取对应的文件。</p>
+<h4 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a><strong>相关概念</strong></h4><p><strong><em>PE文件格式：</em></strong></p>
+<p>全称是Portable Executable，意为可移植的可执行的文件，常见的EXE、DLL、OCX、SYS、COM都是PE文件，PE文件是微软Windows操作系统上的程序文件（可能是间接被执行，如DLL）。</p>
+<p><strong><em>PE文件的分节</em></strong></p>
+<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/08/PMA-%E7%AC%AC1%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.png"></p>
+<p><strong><em>链接库与函数</em></strong></p>
+<p>通常指导入函数，导入函数是一个程序需要用到但是存储在另一程序中的函数，例如常见的代码函数库。</p>
+<p><strong><em>静态链接、运行时链接、动态链接</em></strong></p>
+<p>1、静态链接是指将整个文件在编译之前链接到程序中，如果很多函数都放在一个目标文件中，很可能很多没用的函数都被一起链接，每个可执行程序中对所有需要的目标文件都要有一份副本，因此静态链接比较浪费空间。倘若目标文件有修改，则需要重新编译使得更新困难，因此静态链接比较浪费时间，是不常用的方式。</p>
+<p>2、运行时链接是只有需要使用函数时才链接到库，而非在程序启动时就链接。运行时链接在恶意代码中比较常用。</p>
+<p>3、动态链接解决了静态链接空间浪费和更新困难的问题，把程序按照模块拆分成各个相对独立部分，编译系统在链接阶段并不把目标文件和函数库文件链接在一起，而是等到程序在运行过程中需要使用时才链接函数库。动态链接是最常用的方法。</p>
+<p>在PE文件头中存储了每个将被装在的库文件，以及每个会被程序使用的函数信息。在恶意代码分析的过程中对程序所使用的库与调用函数进行分析，我们可以初步猜测恶意代码的行为。</p>
+<p><strong><em>套接字（socket)</em></strong></p>
+<p>所谓套接字(Socket)，就是对网络中不同主机上的应用进程之间进行双向通信的端点的抽象。一个套接字就是网络上进程通信的一端，提供了应用层进程利用网络协议交换数据的机制。套接字是通信的基石，是支持TCP/IP协议的路通信的基本操作单元（逻辑上），是网络环境中进程间通信的API(现实意义上)。</p>
+<h4 id="恶意代码中常见的Windows函数列表"><a href="#恶意代码中常见的Windows函数列表" class="headerlink" title="恶意代码中常见的Windows函数列表"></a><strong>恶意代码中常见的Windows函数列表</strong></h4><ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-accept">accept</a></strong></li>
+</ul>
+<p>用于socket响应客户端连接请求。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SOCKET WSAAPI accept(</span><br><span class="line">  SOCKET   s,</span><br><span class="line">  sockaddr *addr,</span><br><span class="line">  int      *addrlen</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-adjusttokenprivileges">AdjustTokenPrivileges</a></strong></li>
+</ul>
+<p>用于启用或禁用特定的访问权限。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">BOOL AdjustTokenPrivileges(</span><br><span class="line">  HANDLE            TokenHandle,</span><br><span class="line">  BOOL              DisableAllPrivileges,</span><br><span class="line">  PTOKEN_PRIVILEGES NewState,</span><br><span class="line">  DWORD             BufferLength,</span><br><span class="line">  PTOKEN_PRIVILEGES PreviousState,</span><br><span class="line">  PDWORD            ReturnLength</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-attachthreadinput">AttachThreadInput</a></strong></li>
+</ul>
+<p>用于将一个线程处理的输入附加到另一个线程上，使得第二个线程接收到输入事件，例如鼠标和键盘事件。击键记录器和其他间谍软件会使用这个函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">BOOL AttachThreadInput(</span><br><span class="line">  DWORD idAttach,</span><br><span class="line">  DWORD idAttachTo,</span><br><span class="line">  BOOL  fAttach</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-bind">bind</a></strong></li>
+</ul>
+<p>将一个本地地址关联到socket上，用于监听客户端连接请求.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int bind(</span><br><span class="line">  SOCKET         s,</span><br><span class="line">  const sockaddr *addr,</span><br><span class="line">  int            namelen</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-bitblt">Bitblt</a></strong></li>
+</ul>
+<p>用于将图形数据从一个设备复制到另一设备，可以使用这个函数来捕获屏幕，经常被编译器作为共享库代码添加。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">BOOL BitBlt(</span><br><span class="line">  HDC   hdc,</span><br><span class="line">  int   x,</span><br><span class="line">  int   y,</span><br><span class="line">  int   cx,</span><br><span class="line">  int   cy,</span><br><span class="line">  HDC   hdcSrc,</span><br><span class="line">  int   x1,</span><br><span class="line">  int   y1,</span><br><span class="line">  DWORD rop</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-callnexthookex">CallNextHookEx</a></strong></li>
+</ul>
+<p>将hook信息传递给当前hook链的下一个hook程序，hook程序可以在处理hook信息之前调用此函数，也可以在处理hook信息之后调用此函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">LRESULT CallNextHookEx(</span><br><span class="line">  HHOOK  hhk,</span><br><span class="line">  int    nCode,</span><br><span class="line">  WPARAM wParam,</span><br><span class="line">  LPARAM lParam</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-certopensystemstorea">CertOpenSystemStore</a></strong></li>
+</ul>
+<p>用于访问本地系统中的证书。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HCERTSTORE CertOpenSystemStoreA(</span><br><span class="line">  HCRYPTPROV_LEGACY hProv,</span><br><span class="line">  LPCSTR            szSubsystemProtocol</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/debugapi/nf-debugapi-checkremotedebuggerpresent">CheckRemoteDebuggerPresent</a></strong></li>
+</ul>
+<p>检查某个特定进程是否被调试，通常被用于反调试技术中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">BOOL CheckRemoteDebuggerPresent(</span><br><span class="line">  HANDLE hProcess,</span><br><span class="line">  PBOOL  pbDebuggerPresent</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-cocreateinstance">CoCreateInstance</a></strong></li>
+</ul>
+<p>创建并初始化一个指定CLSID（类标识）的类的实例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">HRESULT CoCreateInstance(</span><br><span class="line">  REFCLSID  rclsid,</span><br><span class="line">  LPUNKNOWN pUnkOuter,</span><br><span class="line">  DWORD     dwClsContext,</span><br><span class="line">  REFIID    riid,</span><br><span class="line">  LPVOID    *ppv</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-connect">connect</a></strong></li>
+</ul>
+<p>连接一个远程socket，通常用来连接一个命令控制服务器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int WSAAPI connect(</span><br><span class="line">  SOCKET         s,</span><br><span class="line">  const sockaddr *name,</span><br><span class="line">  int            namelen</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-connectnamedpipe">ConnectNamedPipe</a></strong></li>
+</ul>
+<p>用来为进程间通信创建一个服务端管道，并等待一个客户端管道来连接。后门程序和反向shell经常使用此函数来简单地连接到一个命令控制服务器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">BOOL ConnectNamedPipe(</span><br><span class="line">  HANDLE       hNamedPipe,</span><br><span class="line">  LPOVERLAPPED lpOverlapped</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-controlservice">ControlService</a></strong></li>
+</ul>
+<p>发送一个控制信号到某个服务，其用意与发送的信号有关。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">BOOL ControlService(</span><br><span class="line">  SC_HANDLE        hService,</span><br><span class="line">  DWORD            dwControl,</span><br><span class="line">  LPSERVICE_STATUS lpServiceStatus</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea">CreateFile</a></strong></li>
+</ul>
+<p>创建一个新文件，或者打开一个已有文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HANDLE CreateFileA(</span><br><span class="line">  LPCSTR                lpFileName,</span><br><span class="line">  DWORD                 dwDesiredAccess,</span><br><span class="line">  DWORD                 dwShareMode,</span><br><span class="line">  LPSECURITY_ATTRIBUTES lpSecurityAttributes,</span><br><span class="line">  DWORD                 dwCreationDisposition,</span><br><span class="line">  DWORD                 dwFlagsAndAttributes,</span><br><span class="line">  HANDLE                hTemplateFile</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createfilemappinga">CreateFileMapping</a></strong></li>
+</ul>
+<p>创建一个映射到文件的句柄，将文件装载到内存，并使得它可以通过内存地址进行访问。启动器、装载器和注入器会使用这个函数来读取和修改PE文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">HANDLE CreateFileMappingA(</span><br><span class="line">  HANDLE                hFile,</span><br><span class="line">  LPSECURITY_ATTRIBUTES lpFileMappingAttributes,</span><br><span class="line">  DWORD                 flProtect,</span><br><span class="line">  DWORD                 dwMaximumSizeHigh,</span><br><span class="line">  DWORD                 dwMaximumSizeLow,</span><br><span class="line">  LPCSTR                lpName</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-createmutexa">CreateMutex</a></strong></li>
+</ul>
+<p><strong>创建一个互斥对象，可以被恶意代码用来确保某个时刻在系统上只有一个实例运行。恶意代码经常使用固定名字作为互斥对象名称，因此可以作为是否感染了恶意代码的一个主机特征。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HANDLE CreateMutexA(</span><br><span class="line">  LPSECURITY_ATTRIBUTES lpMutexAttributes,</span><br><span class="line">  BOOL                  bInitialOwner,</span><br><span class="line">  LPCSTR                lpName</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessa">CreateProcess</a></strong></li>
+</ul>
+<p>创建并启动一个新进程。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">BOOL CreateProcessA(</span><br><span class="line">  LPCSTR                lpApplicationName,</span><br><span class="line">  LPSTR                 lpCommandLine,</span><br><span class="line">  LPSECURITY_ATTRIBUTES lpProcessAttributes,</span><br><span class="line">  LPSECURITY_ATTRIBUTES lpThreadAttributes,</span><br><span class="line">  BOOL                  bInheritHandles,</span><br><span class="line">  DWORD                 dwCreationFlags,</span><br><span class="line">  LPVOID                lpEnvironment,</span><br><span class="line">  LPCSTR                lpCurrentDirectory,</span><br><span class="line">  LPSTARTUPINFOA        lpStartupInfo,</span><br><span class="line">  LPPROCESS_INFORMATION lpProcessInformation</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createremotethread">CreateRemoteThread</a></strong></li>
+</ul>
+<p><strong>用于在另一个进程的虚拟地址空间创建一个线程。启动器和隐蔽性恶意代码经常使用此函数来将代码注入到其他进程中执行。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HANDLE CreateRemoteThread(</span><br><span class="line">  HANDLE                 hProcess,</span><br><span class="line">  LPSECURITY_ATTRIBUTES  lpThreadAttributes,</span><br><span class="line">  SIZE_T                 dwStackSize,</span><br><span class="line">  LPTHREAD_START_ROUTINE lpStartAddress,</span><br><span class="line">  LPVOID                 lpParameter,</span><br><span class="line">  DWORD                  dwCreationFlags,</span><br><span class="line">  LPDWORD                lpThreadId</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-createservicea">CreateService</a></strong></li>
+</ul>
+<p>创建一个可以在启动时刻运行的服务，用以持久化、隐藏或者启动内核驱动。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">SC_HANDLE CreateServiceA(</span><br><span class="line">  SC_HANDLE hSCManager,</span><br><span class="line">  LPCSTR    lpServiceName,</span><br><span class="line">  LPCSTR    lpDisplayName,</span><br><span class="line">  DWORD     dwDesiredAccess,</span><br><span class="line">  DWORD     dwServiceType,</span><br><span class="line">  DWORD     dwStartType,</span><br><span class="line">  DWORD     dwErrorControl,</span><br><span class="line">  LPCSTR    lpBinaryPathName,</span><br><span class="line">  LPCSTR    lpLoadOrderGroup,</span><br><span class="line">  LPDWORD   lpdwTagId,</span><br><span class="line">  LPCSTR    lpDependencies,</span><br><span class="line">  LPCSTR    lpServiceStartName,</span><br><span class="line">  LPCSTR    lpPassword</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-createtoolhelp32snapshot">CreateToolhelp32Snapshot</a></strong></li>
+</ul>
+<p>用于创建一个进程、对空间、线程和模块的快照。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HANDLE CreateToolhelp32Snapshot(</span><br><span class="line">  DWORD dwFlags,</span><br><span class="line">  DWORD th32ProcessID</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-cryptacquirecontexta">CryptAcquireContext</a></strong> </li>
+</ul>
+<p>用于获取windows加密库中某个特定密钥容器的handle。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BOOL CryptAcquireContextA(</span><br><span class="line">  HCRYPTPROV *phProv,</span><br><span class="line">  LPCSTR     szContainer,</span><br><span class="line">  LPCSTR     szProvider,</span><br><span class="line">  DWORD      dwProvType,</span><br><span class="line">  DWORD      dwFlags</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-deviceiocontrol">DeviceIoControl</a></strong></li>
+</ul>
+<p>直接发送某个控制代码到指定的设备驱动，使得响应的设备根据控制代码执行响应操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">BOOL DeviceIoControl(</span><br><span class="line">  HANDLE       hDevice,</span><br><span class="line">  DWORD        dwIoControlCode,</span><br><span class="line">  LPVOID       lpInBuffer,</span><br><span class="line">  DWORD        nInBufferSize,</span><br><span class="line">  LPVOID       lpOutBuffer,</span><br><span class="line">  DWORD        nOutBufferSize,</span><br><span class="line">  LPDWORD      lpBytesReturned,</span><br><span class="line">  LPOVERLAPPED lpOverlapped</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-dllcanunloadnow">DllCanUnloadNow</a></strong></li>
+</ul>
+<p>确定实现某个功能的DLL是否正在使用，如果不是，则调用者可以将此DLL移出内存。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HRESULT DllCanUnloadNow();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-dllgetclassobject">DllGetClassObject</a></strong></li>
+</ul>
+<p>从DLL对象handler或者应用程序对象中检索类对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HRESULT DllGetClassObject(</span><br><span class="line">  REFCLSID rclsid,</span><br><span class="line">  REFIID   riid,</span><br><span class="line">  LPVOID   *ppv</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-dllinstall">DllInstall</a></strong></li>
+</ul>
+<p>安装并设置一个DLL。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HRESULT DllInstall(</span><br><span class="line">  BOOL   bInstall,</span><br><span class="line">  PCWSTR pszCmdLine</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/olectl/nf-olectl-dllregisterserver">DllRegisterServer</a></strong></li>
+</ul>
+<p>使一个进程内server为在server模块中所有受支持的class创建注册表项。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HRESULT DllRegisterServer();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/olectl/nf-olectl-dllunregisterserver">DllUnregisterServer</a></strong></li>
+</ul>
+<p>使一个进程内server删除掉通过DllRegisterServer创建的注册表项。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HRESULT DllUnregisterServer();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>EnableExecuteProtectionSupport</strong></li>
+</ul>
+<p>此函数不在API文档中，用于修改宿主机中的数据执行保护（DEP）设置，使得系统更容易被攻击。</p>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-enumprocesses">EnumProcesses</a></strong></li>
+</ul>
+<p>用于检索系统中每个进程的过程标识符。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">BOOL EnumProcessModules(</span><br><span class="line">  HANDLE  hProcess,</span><br><span class="line">  HMODULE *lphModule,</span><br><span class="line">  DWORD   cb,</span><br><span class="line">  LPDWORD lpcbNeeded</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-enumprocessmodules">EnumProcessModules</a></strong></li>
+</ul>
+<p>检索特定进程中的每个模块。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">BOOL EnumProcessModules(</span><br><span class="line">  HANDLE  hProcess,</span><br><span class="line">  HMODULE *lphModule,</span><br><span class="line">  DWORD   cb,</span><br><span class="line">  LPDWORD lpcbNeeded</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>FindFirstFile/FindNextFile</strong></li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilea">FindFirstFile</a>用于在某个目录或者子目录中搜索，返回第一个匹配的文件名称。</p>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findnextfilea">FindNextFile</a>沿袭<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/desktop/api/fileapi/nf-fileapi-findfirstfilea">FindFirstFile</a>, <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/desktop/api/fileapi/nf-fileapi-findfirstfileexa">FindFirstFileEx</a>, 以及<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-findfirstfiletransacteda">FindFirstFileTransacted</a> 的调用，继续搜索。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HANDLE FindFirstFileA(</span><br><span class="line">  LPCSTR             lpFileName,</span><br><span class="line">  LPWIN32_FIND_DATAA lpFindFileData</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">BOOL FindNextFileA(</span><br><span class="line">  HANDLE             hFindFile,</span><br><span class="line">  LPWIN32_FIND_DATAA lpFindFileData</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-findresourcea">FindResource</a></strong></li>
+</ul>
+<p>用于在指定模块中查找指定类型以及指定名称的资源位置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HRSRC FindResourceA(</span><br><span class="line">  HMODULE hModule,</span><br><span class="line">  LPCSTR  lpName,</span><br><span class="line">  LPCSTR  lpType</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-findwindowa">FindWindow</a></strong></li>
+</ul>
+<p>根据类名和窗口名进行桌面窗口搜索的函数，可用于反调试技术，搜索OllyDbg工具的窗口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HWND FindWindowA(</span><br><span class="line">  LPCSTR lpClassName,</span><br><span class="line">  LPCSTR lpWindowName</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/wininet/nf-wininet-ftpputfilea">FtpPutFile</a></strong></li>
+</ul>
+<p>用于向一个远程FTP服务器上传文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BOOLAPI FtpPutFileA(</span><br><span class="line">  HINTERNET hConnect,</span><br><span class="line">  LPCSTR    lpszLocalFile,</span><br><span class="line">  LPCSTR    lpszNewRemoteFile,</span><br><span class="line">  DWORD     dwFlags,</span><br><span class="line">  DWORD_PTR dwContext</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/iphlpapi/nf-iphlpapi-getadaptersinfo">GetAdaptersInfo</a></strong></li>
+</ul>
+<p>用于获取本地主机的网络适配器信息。也可用于获取主机的MAC地址，并且在对抗虚拟机技术中可以用来检测VMware等虚拟机。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IPHLPAPI_DLL_LINKAGE ULONG GetAdaptersInfo(</span><br><span class="line">  PIP_ADAPTER_INFO AdapterInfo,</span><br><span class="line">  PULONG           SizePointer</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate">GetAsyncKeyState</a></strong></li>
+</ul>
+<p>用于确定键盘上的某个键是否被输入，可以被用来实现击键记录器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SHORT GetAsyncKeyState(</span><br><span class="line">  int vKey</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdc">GetDC</a></strong></li>
+</ul>
+<p>DC是指device context。本函数用于获取某个窗口或者整个屏幕的handle。通常被用于抓取桌面截屏。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HDC GetDC(</span><br><span class="line">  HWND hWnd</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getforegroundwindow">GetForegroundWindow</a></strong></li>
+</ul>
+<p>返回当前用户在桌面上的工作窗口，击键记录器会普遍使用这个函数来确定用户正在往哪个窗口输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HWND GetForegroundWindow();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-gethostbyname">gethostbyname</a></strong></li>
+</ul>
+<p>用于对一个特定域名进行一次DNS查询。被查询的域名可以用作恶意程序的网络检测特征码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hostent * gethostbyname(</span><br><span class="line">  const char *name</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-gethostname">gethostname</a></strong></li>
+</ul>
+<p>获取当前计算机的主机名。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int gethostname(</span><br><span class="line">  char *name,</span><br><span class="line">  int  namelen</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getkeystate">GetKeyState</a></strong></li>
+</ul>
+<p>获取键盘上一个特定键的状态，通常被击键记录器所使用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SHORT GetKeyState(</span><br><span class="line">  int nVirtKey</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulefilenamea">GetModuleFilename</a></strong></li>
+</ul>
+<p>返回当前已加载的某个指定模块的绝对路径。可用于在运行进程中修改或者复制文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">DWORD GetModuleFileNameA(</span><br><span class="line">  HMODULE hModule,</span><br><span class="line">  LPSTR   lpFilename,</span><br><span class="line">  DWORD   nSize</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulehandlea">GetModuleHandle</a></strong></li>
+</ul>
+<p>用于获取当前已加载的某个模块的module handle。可以用来在一个装载模块中定位和修改代码，或者搜索某个合适的位置来注入代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HMODULE GetModuleHandleA(</span><br><span class="line">  LPCSTR lpModuleName</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a href="">GetProcAddress</a></strong></li>
+</ul>
+<p>用于获取某个被装入到内存中的DLL程序的函数地址，以便从该程序中获取需要用到的导入函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FARPROC GetProcAddress(</span><br><span class="line">  HMODULE hModule,</span><br><span class="line">  LPCSTR  lpProcName</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getstartupinfow">GetStartupInfo</a></strong></li>
+</ul>
+<p>获取某个进程被创建时的<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/ns-processthreadsapi-startupinfoa">STARTUPINFO</a>结构 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">void GetStartupInfoW(</span><br><span class="line">  LPSTARTUPINFOW lpStartupInfo</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-getsystemdefaultlangid">GetSystemDefaultLangId</a></strong></li>
+</ul>
+<p>返回系统默认语言设置，可以用来定制系统显示语言，可以作为被感染主机的摘要信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LANGID GetSystemDefaultLangID();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-gettemppatha">GetTempPath</a></strong></li>
+</ul>
+<p>返回某个指定的临时文件的路径。恶意代码可能通过其获取临时文件路径，读取或写入某些文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DWORD GetTempPathA(</span><br><span class="line">  DWORD nBufferLength,</span><br><span class="line">  LPSTR lpBuffer</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getthreadcontext">GetThreadContext</a></strong></li>
+</ul>
+<p>返回某个指定线程的上下文结构。线程的上下文结构中存储了线程的所有信息，比如寄存器值和当前状态。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">BOOL GetThreadContext(</span><br><span class="line">  HANDLE    hThread,</span><br><span class="line">  LPCONTEXT lpContext</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-gettickcount">GetTickCount</a></strong></li>
+</ul>
+<p>获取系统启动后到当前时间的微秒数，最多累计到49.7天。此函数只能提供少量的线索信息，例如在反调试技术中被用来获取时间信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DWORD GetTickCount();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getversionexa">GetVersionEx</a></strong></li>
+</ul>
+<p>本函数在Windows 8.1之后的windows版本可能不再支持。本函数返回当前运行的Windows操作系统版本系统信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NOT_BUILD_WINDOWS_DEPRECATE BOOL GetVersionExA(</span><br><span class="line">  LPOSVERSIONINFOA lpVersionInformation</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getwindowsdirectorya">GetWindowsDirectory</a></strong></li>
+</ul>
+<p>返回Windows目录的文件系统路径（通常是C:\Windows），恶意代码经常使用这个函数来确定其他恶意程序的安装路径。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">UINT GetWindowsDirectoryA(</span><br><span class="line">  LPSTR lpBuffer,</span><br><span class="line">  UINT  uSize</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-inet_addr">inet_addr</a></strong></li>
+</ul>
+<p>对一个IP地址字符串进行转换成<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/desktop/api/winsock2/ns-winsock2-in_addr">IN_ADDR</a>结构的地址，这些字符串可作为网络特征码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">unsigned long WSAAPI inet_addr(</span><br><span class="line">  const char *cp</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/wininet/nf-wininet-internetopenw">InternetOpen</a></strong></li>
+</ul>
+<p>初始化调用WinINet函数的程序，其参数之一User-Agent(lpszAgent)可作为网络特征码。该函数可用于寻找网络访问功能的初始位置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">void InternetOpenW(</span><br><span class="line">  LPCWSTR lpszAgent,</span><br><span class="line">  DWORD   dwAccessType,</span><br><span class="line">  LPCWSTR lpszProxy,</span><br><span class="line">  LPCWSTR lpszProxyBypass,</span><br><span class="line">  DWORD   dwFlags</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/wininet/nf-wininet-internetopenurla">InternetOpenUrl</a></strong></li>
+</ul>
+<p>使用FTP、HTTP或者HTTPS连接协议来打开一个特定的URL。此URL可以作为网络特征码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">void InternetOpenUrlA(</span><br><span class="line">  HINTERNET hInternet,</span><br><span class="line">  LPCSTR    lpszUrl,</span><br><span class="line">  LPCSTR    lpszHeaders,</span><br><span class="line">  DWORD     dwHeadersLength,</span><br><span class="line">  DWORD     dwFlags,</span><br><span class="line">  DWORD_PTR dwContext</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/wininet/nf-wininet-internetreadfile">InternetReadFile</a></strong></li>
+</ul>
+<p>读取 <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/desktop/api/wininet/nf-wininet-internetopenurla">InternetOpenUrl</a>, <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/desktop/api/wininet/nf-wininet-ftpopenfilea">FtpOpenFile</a>, 或者<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/desktop/api/wininet/nf-wininet-httpopenrequesta">HttpOpenRequest</a>函数打开的URL链接数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">BOOLAPI InternetReadFile(</span><br><span class="line">  HINTERNET hFile,</span><br><span class="line">  LPVOID    lpBuffer,</span><br><span class="line">  DWORD     dwNumberOfBytesToRead,</span><br><span class="line">  LPDWORD   lpdwNumberOfBytesRead</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/wininet/nf-wininet-internetwritefile">InternetWriteFile</a></strong></li>
+</ul>
+<p>向某个打开的网络文件中写数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">BOOLAPI InternetWriteFile(</span><br><span class="line">  HINTERNET hFile,</span><br><span class="line">  LPCVOID   lpBuffer,</span><br><span class="line">  DWORD     dwNumberOfBytesToWrite,</span><br><span class="line">  LPDWORD   lpdwNumberOfBytesWritten</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/debugapi/nf-debugapi-isdebuggerpresent">IsDebuggerPresent</a></strong></li>
+</ul>
+<p>检查当前进程是否被调试器调试，常用于反调试技术中。此函数经常由编译器添加并包含在许多可执行程序中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BOOL IsDebuggerPresent();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://source.winehq.org/WineAPI/IsNTAdmin.html">IsNTAdmin</a></strong></li>
+</ul>
+<p>检查某个用户是否具有管理员权限。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">BOOL IsNTAdmin</span><br><span class="line">(</span><br><span class="line"> DWORD   reserved,</span><br><span class="line"> LPDWORD pReserved</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/wow64apiset/nf-wow64apiset-iswow64process">IsWoW64Process</a></strong></li>
+</ul>
+<p>用于确定某个指定进程是否运行于64位操作系统上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">BOOL IsWow64Process(</span><br><span class="line">  HANDLE hProcess,</span><br><span class="line">  PBOOL  Wow64Process</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="http://undocumented.ntinternals.net/index.html?page=UserMode/Undocumented%20Functions/Executable%20Images/LdrLoadDll.html">LdrLoadDll</a></strong></li>
+</ul>
+<p>功能同<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibraryexa">LoadLibraryEx</a>函数，但方式更为隐蔽。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">LdrLoadDll(</span><br><span class="line">  IN PWCHAR               PathToFile OPTIONAL,</span><br><span class="line">  IN ULONG                Flags OPTIONAL,</span><br><span class="line">  IN PUNICODE_STRING      ModuleFileName,</span><br><span class="line">  OUT PHANDLE             ModuleHandle</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya">LoadLibrary</a></strong></li>
+</ul>
+<p>装载某个DLL程序到进程中，该DLL可能导致其他模块被加载。几乎每个Win32程序都会导入此函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HMODULE LoadLibraryA(</span><br><span class="line">  LPCSTR lpLibFileName</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadresource">LoadResource</a></strong></li>
+</ul>
+<p>获取到某个指向内存中指定资源的首个字节的指针的句柄，从而装载PE文件中的资源到内存中，该资源可能是字符串、配置信息或者其他恶意文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HGLOBAL LoadResource(</span><br><span class="line">  HMODULE hModule,</span><br><span class="line">  HRSRC   hResInfo</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/ntsecapi/nf-ntsecapi-lsaenumeratelogonsessions">LsaEnumerateLogonSessions</a></strong></li>
+</ul>
+<p>获取当前系统的登录会话标识符（LUIDs），往往是一个登录凭证窃取器常用的功能之一。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NTSTATUS LsaEnumerateLogonSessions(</span><br><span class="line">  PULONG LogonSessionCount,</span><br><span class="line">  PLUID  *LogonSessionList</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-mapviewoffile">MapViewOfFile</a></strong></li>
+</ul>
+<p>将一个文件映射到内存，使得文件内容可以通过内存地址访问。启动器、装载器、注入器通常使用此函数来读取和修改PE文件，从而不通过WriteFile来修改文件内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">LPVOID MapViewOfFile(</span><br><span class="line">  HANDLE hFileMappingObject,</span><br><span class="line">  DWORD  dwDesiredAccess,</span><br><span class="line">  DWORD  dwFileOffsetHigh,</span><br><span class="line">  DWORD  dwFileOffsetLow,</span><br><span class="line">  SIZE_T dwNumberOfBytesToMap</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mapvirtualkeya">MapVirtualKey</a></strong></li>
+</ul>
+<p>将一个虚拟键值转换成字符值，通常被用于击键记录器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">UINT MapVirtualKeyA(</span><br><span class="line">  UINT uCode,</span><br><span class="line">  UINT uMapType</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a href="">MmGetSystemRoutineAddress</a></strong></li>
+</ul>
+<p>被内核调用，仅用于获得ntoskrnl.exe和hal.dll的函数地址。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PVOID MmGetSystemRoutineAddress(</span><br><span class="line">  PUNICODE_STRING SystemRoutineName</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>Module32First /Module32Next</strong></li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-module32first">Module32First</a>可以获取到进程的第一个模块。</p>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-module32next">Module32Next</a>可以获取到进程的下一个模块</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">BOOL Module32First(</span><br><span class="line">  HANDLE          hSnapshot,</span><br><span class="line">  LPMODULEENTRY32 lpme</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">BOOL Module32Next(</span><br><span class="line">  HANDLE          hSnapshot,</span><br><span class="line">  LPMODULEENTRY32 lpme</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/lmat/nf-lmat-netschedulejobadd">NetScheduleJobAdd</a></strong></li>
+</ul>
+<p>此函数在win 8之后不再支持。其可以指定一个程序在某个特定时刻运行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NET_API_STATUS NET_API_FUNCTION NetScheduleJobAdd(</span><br><span class="line">  LPCWSTR Servername,</span><br><span class="line">  LPBYTE  Buffer,</span><br><span class="line">  LPDWORD JobId</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/lmshare/nf-lmshare-netshareenum">NetShareEnum</a></strong></li>
+</ul>
+<p>获取某个服务器上每个共享资源的相关信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NET_API_STATUS NET_API_FUNCTION NetShareEnum(</span><br><span class="line">  LMSTR   servername,</span><br><span class="line">  DWORD   level,</span><br><span class="line">  LPBYTE  *bufptr,</span><br><span class="line">  DWORD   prefmaxlen,</span><br><span class="line">  LPDWORD entriesread,</span><br><span class="line">  LPDWORD totalentries,</span><br><span class="line">  LPDWORD resume_handle</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntquerydirectoryfile">NtQueryDirectoryFile</a></strong></li>
+</ul>
+<p>返回一个目录中的各类文件信息。RootKit普遍使用此函数来隐藏文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">__kernel_entry NTSYSCALLAPI NTSTATUS NtQueryDirectoryFile(</span><br><span class="line">  HANDLE                 FileHandle,</span><br><span class="line">  HANDLE                 Event,</span><br><span class="line">  PIO_APC_ROUTINE        ApcRoutine,</span><br><span class="line">  PVOID                  ApcContext,</span><br><span class="line">  PIO_STATUS_BLOCK       IoStatusBlock,</span><br><span class="line">  PVOID                  FileInformation,</span><br><span class="line">  ULONG                  Length,</span><br><span class="line">  FILE_INFORMATION_CLASS FileInformationClass,</span><br><span class="line">  BOOLEAN                ReturnSingleEntry,</span><br><span class="line">  PUNICODE_STRING        FileName,</span><br><span class="line">  BOOLEAN                RestartScan</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a href="">NtQueryInformationProcess</a></strong></li>
+</ul>
+<p>返回某个特定进程的各种信息。通常用于反调试技术中，其返回的信息与CheckRemoteDebuggerPresent函数相同。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">__kernel_entry NTSTATUS NtQueryInformationProcess(</span><br><span class="line">  HANDLE           ProcessHandle,</span><br><span class="line">  PROCESSINFOCLASS ProcessInformationClass,</span><br><span class="line">  PVOID            ProcessInformation,</span><br><span class="line">  ULONG            ProcessInformationLength,</span><br><span class="line">  PULONG           ReturnLength</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="http://undocumented.ntinternals.net/index.html?page=UserMode/Undocumented%20Functions/NT%20Objects/Process/NtSetInformationProcess.html">NtSetInformationProcess</a></strong></li>
+</ul>
+<p>用于改变一个程序的权限级别，或者用于绕过数据执行保护（DEP）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">NtSetInformationProcess(</span><br><span class="line">  IN HANDLE               ProcessHandle,</span><br><span class="line">  IN PROCESS_INFORMATION_CLASS ProcessInformationClass,</span><br><span class="line">  IN PVOID                ProcessInformation,</span><br><span class="line">  IN ULONG                ProcessInformationLength</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntquerydirectoryfile">OleInitialize</a></strong></li>
+</ul>
+<p>用于初始化COM库，在使用COM对象的相关功能之前必须调用此函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HRESULT OleInitialize(</span><br><span class="line">  LPVOID pvReserved</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-openmutexw">OpenMutex</a></strong></li>
+</ul>
+<p>打开一个已存在的互斥对象。通常被恶意代码用于确保在任意时间，系统中只有一个运行实例。互斥对象通常是固定名字，因此可以作为主机特征。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HANDLE OpenMutexW(</span><br><span class="line">  DWORD   dwDesiredAccess,</span><br><span class="line">  BOOL    bInheritHandle,</span><br><span class="line">  LPCWSTR lpName</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-openprocess">OpenProcess</a></strong></li>
+</ul>
+<p>打开系统上其他运行中进程的句柄。此句柄可以用来向其他进程所在的运行内存中读写数据，或者注入代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HANDLE OpenProcess(</span><br><span class="line">  DWORD dwDesiredAccess,</span><br><span class="line">  BOOL  bInheritHandle,</span><br><span class="line">  DWORD dwProcessId</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-openscmanagera">OpenSCManager</a></strong></li>
+</ul>
+<p>在指定计算机上建立与服务控制管理器的连接，并获取特定服务控制管理器的数据库。任何想要安装、修改或者是控制一个服务的程序，都必须先调用此函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SC_HANDLE OpenSCManagerA(</span><br><span class="line">  LPCSTR lpMachineName,</span><br><span class="line">  LPCSTR lpDatabaseName,</span><br><span class="line">  DWORD  dwDesiredAccess</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/debugapi/nf-debugapi-outputdebugstringw">OutputDebugString</a></strong></li>
+</ul>
+<p>输出字符串到一个附加的调试器上，可以用于反调试技术。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">void OutputDebugStringW(</span><br><span class="line">  LPCWSTR lpOutputString</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-peeknamedpipe">PeekNamedPipe</a></strong></li>
+</ul>
+<p>可从命名管道中复制数据至缓冲区，复制时不删除源数据。常用于反向shell。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">BOOL PeekNamedPipe(</span><br><span class="line">  HANDLE  hNamedPipe,</span><br><span class="line">  LPVOID  lpBuffer,</span><br><span class="line">  DWORD   nBufferSize,</span><br><span class="line">  LPDWORD lpBytesRead,</span><br><span class="line">  LPDWORD lpTotalBytesAvail,</span><br><span class="line">  LPDWORD lpBytesLeftThisMessage</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>Process32First/Process32Next</strong></li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-process32first">Process32First</a>获取系统快照中的第一个进程信息，在调用CreateToolhelp32Snapshot函数后可以使用。</p>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-process32next">Process32Next</a>获取系统快照中的下一个进程信息。通常用于遍历以寻找到某个可注入进程。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">BOOL Process32First(</span><br><span class="line">  HANDLE           hSnapshot,</span><br><span class="line">  LPPROCESSENTRY32 lppe</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">BOOL Process32Next(</span><br><span class="line">  HANDLE           hSnapshot,</span><br><span class="line">  LPPROCESSENTRY32 lppe</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancecounter">QueryPerformanceCounter</a></strong></li>
+</ul>
+<p>用于获取基于硬件的性能计数器的值，有时可用于反调试技术以获取时间信息。此函数会被编译器添加并包含在许多可执行程序中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">BOOL QueryPerformanceCounter(</span><br><span class="line">  LARGE_INTEGER *lpPerformanceCount</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-queueuserapc">QueueUserAPC</a></strong></li>
+</ul>
+<p>向异步过程调用（asychronous procedure call，APC）队列添加一个用户模式的APC对象。可用于向其他进程注入代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">DWORD QueueUserAPC(</span><br><span class="line">  PAPCFUNC  pfnAPC,</span><br><span class="line">  HANDLE    hThread,</span><br><span class="line">  ULONG_PTR dwData</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-readprocessmemory">ReadProcessMemory</a></strong></li>
+</ul>
+<p>从指定进程中拷贝指定范围的数据到当前进程的指定缓冲区中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BOOL ReadProcessMemory(</span><br><span class="line">  HANDLE  hProcess,</span><br><span class="line">  LPCVOID lpBaseAddress,</span><br><span class="line">  LPVOID  lpBuffer,</span><br><span class="line">  SIZE_T  nSize,</span><br><span class="line">  SIZE_T  *lpNumberOfBytesRead</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recv">recv</a></strong></li>
+</ul>
+<p>从socket接受数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int recv(</span><br><span class="line">  SOCKET s,</span><br><span class="line">  char   *buf,</span><br><span class="line">  int    len,</span><br><span class="line">  int    flags</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerhotkey">RegisterHotKey</a></strong></li>
+</ul>
+<p>用于定义一个系统范围的hot key，当用户任意时刻输入一个特定键值组合（比如Ctrl+Alt+J）时，热键句柄将会接受到消息，由于时系统范围的热键，因此用户在任何一个窗口输入键值组合都能触发。此函数通常被间谍软件使用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">BOOL RegisterHotKey(</span><br><span class="line">  HWND hWnd,</span><br><span class="line">  int  id,</span><br><span class="line">  UINT fsModifiers,</span><br><span class="line">  UINT vk</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regopenkeya">RegOpenKey</a></strong></li>
+</ul>
+<p>打开某个指定的注册表键值，用以读写。修改注册表键值通常时持久化方法之一。注册表包含了完整额操作系统和应用程序配置信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LSTATUS RegOpenKeyA(</span><br><span class="line">  HKEY   hKey,</span><br><span class="line">  LPCSTR lpSubKey,</span><br><span class="line">  PHKEY  phkResult</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-resumethread">ResumeThread</a></strong></li>
+</ul>
+<p>继续执行之前挂起的线程，常用于注入技术中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DWORD ResumeThread(</span><br><span class="line">  HANDLE hThread</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcreateregistrykey">RtlCreateRegistryKey</a></strong></li>
+</ul>
+<p>在内核模式代码中，向注册表创建一个键值，该键值为给定的绝对路径。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NTSYSAPI NTSTATUS RtlCreateRegistryKey(</span><br><span class="line">  ULONG RelativeTo,</span><br><span class="line">  PWSTR Path</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlwriteregistryvalue">RtlWriteRegistryValue</a></strong></li>
+</ul>
+<p>在内核模式向注册表写入一个键值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">NTSYSAPI NTSTATUS RtlWriteRegistryValue(</span><br><span class="line">  ULONG  RelativeTo,</span><br><span class="line">  PCWSTR Path,</span><br><span class="line">  PCWSTR ValueName,</span><br><span class="line">  ULONG  ValueType,</span><br><span class="line">  PVOID  ValueData,</span><br><span class="line">  ULONG  ValueLength</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>SamIConnect</strong></li>
+</ul>
+<p>连接安全账户管理器（SAM），以调用其他用来访问登录凭证信息的函数（在Microsoft Doc中未提供此函数的说明）。</p>
+<ul>
+<li><strong>SamIGetPrivateData</strong></li>
+</ul>
+<p>从安全账户管理器数据库中查询某个特定用户的私密信息（在Microsoft Doc中未提供此函数的说明）。</p>
+<ul>
+<li><strong>SamQueryInformationUse</strong></li>
+</ul>
+<p>从安全账户管理器数据库中查询某个特定用户的口令密文（在Microsoft Doc中未提供此函数的说明）。</p>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-send">send</a></strong></li>
+</ul>
+<p>向已连接的socket发送数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int WSAAPI send(</span><br><span class="line">  SOCKET     s,</span><br><span class="line">  const char *buf,</span><br><span class="line">  int        len,</span><br><span class="line">  int        flags</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfiletime">SetFileTime</a></strong></li>
+</ul>
+<p>修改某个文件或目录的创建、访问或者最后修改时间。通常被恶意程序用于隐藏恶意行为。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">BOOL SetFileTime(</span><br><span class="line">  HANDLE         hFile,</span><br><span class="line">  const FILETIME *lpCreationTime,</span><br><span class="line">  const FILETIME *lpLastAccessTime,</span><br><span class="line">  const FILETIME *lpLastWriteTime</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setthreadcontext">SetThreadContext</a></strong></li>
+</ul>
+<p>用于修改指定线程的上下文，可用于注入技术。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">BOOL SetThreadContext(</span><br><span class="line">  HANDLE        hThread,</span><br><span class="line">  const CONTEXT *lpContext</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowshookexa">SetWindowsHookEx</a></strong></li>
+</ul>
+<p>设置一个hook函数，使其在某个特定事件触发时被调用。此函数普遍被用于击键记录器和间谍软件。此函数也可以轻易地将一个DLL程序装载到系统的所有GUI进程中。编译器又是会在编译的时候添加此函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">HHOOK SetWindowsHookExA(</span><br><span class="line">  int       idHook,</span><br><span class="line">  HOOKPROC  lpfn,</span><br><span class="line">  HINSTANCE hmod,</span><br><span class="line">  DWORD     dwThreadId</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>SfcTerminatedWatcherThread</strong></li>
+</ul>
+<p>用于禁用Windows文件保护功能并修改被保护的文件（在Microsoft Doc中未提供此函数的说明）。</p>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecutea">ShellExecute</a></strong></li>
+</ul>
+<p>用于执行另一个程序，例如创建某个新进程。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">HINSTANCE ShellExecuteA(</span><br><span class="line">  HWND   hwnd,</span><br><span class="line">  LPCSTR lpOperation,</span><br><span class="line">  LPCSTR lpFile,</span><br><span class="line">  LPCSTR lpParameters,</span><br><span class="line">  LPCSTR lpDirectory,</span><br><span class="line">  INT    nShowCmd</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-startservicectrldispatchera">StartServiceCtrlDispatcher</a></strong></li>
+</ul>
+<p>将某个服务进程的主线程连接到服务控制管理器。任何以服务方式运行的进程必须在启动后的30秒内调用此函数。倘若在恶意程序中找到此函数，则表示此恶意程序以服务的方式运行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">BOOL StartServiceCtrlDispatcherA(</span><br><span class="line">  const SERVICE_TABLE_ENTRYA *lpServiceStartTable</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-suspendthread">SuspendThread</a></strong></li>
+</ul>
+<p>停止某个正在运行的线程，并将其挂起。通常被用于代码注入技术中，使得某个线程被挂起，便于修改。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DWORD SuspendThread(</span><br><span class="line">  HANDLE hThread</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://www.tutorialspoint.com/c_standard_library/c_function_system.htm">system</a></strong></li>
+</ul>
+<p>C函数库中的函数，用于创建进程或者执行某条命令，在Windows操作系统中，此函数是CreateProcess的封装。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int system(const char *command)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>Thread32First/Thread32Next</strong></li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-thread32first">Thread32First</a>用于获取当前系统快照中任意进程的第一个线程信息。</p>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-thread32next">Thread32Next</a>用于获取当前系统快照中任意进程的下一个线程信息。</p>
+<p>这两个函数通常被用于寻找可供注入的合适线程。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">BOOL Thread32First(</span><br><span class="line">  HANDLE          hSnapshot,</span><br><span class="line">  LPTHREADENTRY32 lpte</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">BOOL Thread32Next(</span><br><span class="line">  HANDLE          hSnapshot,</span><br><span class="line">  LPTHREADENTRY32 lpte</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-toolhelp32readprocessmemory">Toolhelp32ReadProcessMemory</a></strong></li>
+</ul>
+<p>将其他进程的内存数据拷贝到应用支持的缓冲区中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BOOL Toolhelp32ReadProcessMemory(</span><br><span class="line">  DWORD   th32ProcessID,</span><br><span class="line">  LPCVOID lpBaseAddress,</span><br><span class="line">  LPVOID  lpBuffer,</span><br><span class="line">  SIZE_T  cbRead,</span><br><span class="line">  SIZE_T  *lpNumberOfBytesRead</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/ms775123(v=vs.85)">URLDownloadToFile</a></strong></li>
+</ul>
+<p>从某个网络上下载文件并存储到本地。此函数实现了下载器的所有功能。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">HRESULT URLDownloadToFile(</span><br><span class="line">             LPUNKNOWN            pCaller,</span><br><span class="line">             LPCTSTR              szURL,</span><br><span class="line">             LPCTSTR              szFileName,</span><br><span class="line">  _Reserved_ DWORD                dwReserved,</span><br><span class="line">             LPBINDSTATUSCALLBACK lpfnCB</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualallocex">VirtualAllocEx</a></strong></li>
+</ul>
+<p>用于内存分配，可用于进程注入。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">LPVOID VirtualAllocEx(</span><br><span class="line">  HANDLE hProcess,</span><br><span class="line">  LPVOID lpAddress,</span><br><span class="line">  SIZE_T dwSize,</span><br><span class="line">  DWORD  flAllocationType,</span><br><span class="line">  DWORD  flProtect</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualprotectex">VIrtualProtectEx</a></strong></li>
+</ul>
+<p>修改某块内存区域的保护机制，可将只读内存节改为可写内存节。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BOOL VirtualProtectEx(</span><br><span class="line">  HANDLE hProcess,</span><br><span class="line">  LPVOID lpAddress,</span><br><span class="line">  SIZE_T dwSize,</span><br><span class="line">  DWORD  flNewProtect,</span><br><span class="line">  PDWORD lpflOldProtect</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-widechartomultibyte">WideCharToMultiByte</a></strong></li>
+</ul>
+<p>用于将一个Unicode类型字符串转化为一个ASCII类型字符串。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">int WideCharToMultiByte(</span><br><span class="line">  UINT                               CodePage,</span><br><span class="line">  DWORD                              dwFlags,</span><br><span class="line">  _In_NLS_string_(cchWideChar)LPCWCH lpWideCharStr,</span><br><span class="line">  int                                cchWideChar,</span><br><span class="line">  LPSTR                              lpMultiByteStr,</span><br><span class="line">  int                                cbMultiByte,</span><br><span class="line">  LPCCH                              lpDefaultChar,</span><br><span class="line">  LPBOOL                             lpUsedDefaultChar</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-winexec">WinExec</a></strong></li>
+</ul>
+<p>用于执行某个指定程序。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">UINT WinExec(</span><br><span class="line">  LPCSTR lpCmdLine,</span><br><span class="line">  UINT   uCmdShow</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winwlx/nf-winwlx-wlxloggedonsas">WlxLoggedOnSAS</a></strong></li>
+</ul>
+<p>身份认证模块，可用于图形化标识与认证模块（GINA）的劫持（Windows Server 2008 和 Windows Vista不再支持此函数）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int WlxLoggedOnSAS(</span><br><span class="line">  PVOID pWlxContext,</span><br><span class="line">  DWORD dwSasType,</span><br><span class="line">  PVOID pReserved</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/wow64apiset/nf-wow64apiset-wow64disablewow64fsredirection">Wow64DisableWow64FsRedirection</a></strong></li>
+</ul>
+<p>禁用32位文件在64位操作系统中装在后发生的文件重定向机制。倘若一个32位应用程序在调用这个函数后向C:\Windows\System32写数据，那么它将会直接写到C:\Windows\System32，而不会重定向至C:\Windows\SysWOW64。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">BOOL Wow64DisableWow64FsRedirection(</span><br><span class="line">  PVOID *OldValue</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-writeprocessmemory">WriteProcessMemory</a></strong></li>
+</ul>
+<p>向指定进程的可写内存区域写入数据，常用于进程注入。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BOOL WriteProcessMemory(</span><br><span class="line">  HANDLE  hProcess,</span><br><span class="line">  LPVOID  lpBaseAddress,</span><br><span class="line">  LPCVOID lpBuffer,</span><br><span class="line">  SIZE_T  nSize,</span><br><span class="line">  SIZE_T  *lpNumberOfBytesWritten</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsastartup">WSAStartup</a></strong></li>
+</ul>
+<p>用于初始化使用Winsock DLL的进程，此函数的调用位置可以用来定位网络相关的功能。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int WSAStartup(</span><br><span class="line">  WORD      wVersionRequired,</span><br><span class="line">  LPWSADATA lpWSAData</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+  </div>
+  <div class="post-meta">
+    <span class="post-time" style="color:#646060;font-size:13px">2021-01-08</span>
+  </div>
+
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Practical-Malware-Analysis/" rel="tag">Practical Malware Analysis</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+
+<!-- 评论插件 -->
+
+<footer>
+  2021
+  <span class="author">
+    undoingfish
+  </span>
+</footer>
+
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>PMA 第0章学习笔记 - undoingfish的博客</title>
+  <link rel="icon" href="https://i.imgur.com/SrZt9VU.jpg" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=Practical Malware Analysis>
+  
+  
+  
+    <link rel="alternate" href="/atom.xml " title="undoingfish的博客" type="application/atom+xml">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">undoingfish的博客</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/summary" class="menu-item-link">Summary</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">About</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">RSS</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">PMA 第0章学习笔记</h1>
+  </div>
+
+  <!-- 文章目录 -->
+  
+
+  <div class="post-content">
+    <p><strong>恶意代码的分析目标</strong></p>
+<p>为一起网络入侵事件的响应提供所需信息，例如确定发生了什么、定位出所有受感染的主机和文件。通常情况下，需要通过分析基于主机的特征和基于网络的特征来确定恶意程序的目标与功能特性。</p>
+<p><strong>恶意代码的分析技术</strong></p>
+<p><em>静态分析</em>：确定某个文件是否是恶意的。对恶意代码内部机制进行逆向工程，将可执行文件进行反汇编，通过查看汇编指令来发现恶意代码行为。</p>
+<p><em>动态分析</em>：在隔离的环境中运行恶意代码并分析其行为。可以使用调试器来检查某个恶意程序运行时的状态，从而从可执行文件中获取详细信息。</p>
+<p><strong>恶意代码类型</strong></p>
+<p><em>后门</em>：将自身安装到某台计算机来允许攻击者访问的恶意代码，能让攻击者远程连接并执行命令。</p>
+<p><em>僵尸网络</em>：采用一种或多种传播手段，将大量主机感染僵尸病毒，从而在控制者和被感染主机之间所形成的一个可一对多控制的网络。</p>
+<p><em>下载器</em>：用于下载和安装其他恶意代码的程序。</p>
+<p><em>间谍软件</em>：从受害计算机上收集敏感信息并发送给攻击者的恶意代码。</p>
+<p><em>启动器</em>：使用非传统技术来启动其他恶意程序的恶意代码。</p>
+<p><em>内核套件</em>：用于隐藏其他恶意程序，通常与其他恶意代码组合，又叫rootkit。</p>
+<p><em>勒索软件</em>：一种流行的木马，通过骚扰、恐吓甚至采用绑架用户文件等方式，使用户数据资产或计算资源无法正常使用，并以此为条件向用户勒索钱财。</p>
+<p>……</p>
+<p>无需陷入根据功能来对恶意代码进行分类的误区中，毕竟我们的目的是对恶意代码进行分析，一个恶意代码可能集成多个功能。</p>
+
+  </div>
+  <div class="post-meta">
+    <span class="post-time" style="color:#646060;font-size:13px">2021-01-08</span>
+  </div>
+
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Practical-Malware-Analysis/" rel="tag">Practical Malware Analysis</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+
+<!-- 评论插件 -->
+
+<footer>
+  2021
+  <span class="author">
+    undoingfish
+  </span>
+</footer>
+
+
+    </div>
+  </body>
+</html>
