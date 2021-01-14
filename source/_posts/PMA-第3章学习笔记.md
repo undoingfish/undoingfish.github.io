@@ -34,19 +34,19 @@ tags: Practical Malware Analysis
 
 1、打开VS中的开发者命令提示符工具（Developer Command Prompt for VS**)
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210114145641006.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/14/PMA-%E7%AC%AC3%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.png)
 
 2、运行命令：dumpbin /headers "***.dll"
 
 为避免绝对路径中的空格影响，可将绝对路径带上双引号。如下图所示，该dll为32位dll。
 
-![image-20210114152940662](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210114152940662.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/14/PMA-%E7%AC%AC3%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/2.png)
 
 **方法二**
 
 使用记事本打开对应文件，搜索“PE”关键字，出现“PE L”则表示该dll为32位dll，若出现PE d则是64位。
 
-![image-20210114150550994](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210114150550994.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/14/PMA-%E7%AC%AC3%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.png)
 
 - ##### 关于32位文件和64位文件运行的问题：
 
@@ -64,4 +64,4 @@ C:\>rundll32.exe DLLname, Export arguments
 
 此处的rundll32.exe是64位程序：
 
-![image-20210114152821278](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210114152821278.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/14/PMA-%E7%AC%AC3%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/4.png)
