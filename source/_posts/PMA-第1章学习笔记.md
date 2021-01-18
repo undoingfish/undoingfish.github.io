@@ -4,7 +4,7 @@ date: 2021-01-08 14:20:58
 tags: Practical Malware Analysis
 ---
 
-#### **静态分析基础技术**
+## **静态分析基础技术**
 
 1、通过反病毒引擎扫描：https://www.virustotal.com/
 
@@ -20,7 +20,7 @@ tags: Practical Malware Analysis
 
 7、可以用Resource Hacker工具来查看资源节（.rsrc节），并提取对应的文件。
 
-#### **相关概念**
+### **相关概念**
 
 ***PE文件格式：***
 
@@ -48,7 +48,7 @@ tags: Practical Malware Analysis
 
 所谓套接字(Socket)，就是对网络中不同主机上的应用进程之间进行双向通信的端点的抽象。一个套接字就是网络上进程通信的一端，提供了应用层进程利用网络协议交换数据的机制。套接字是通信的基石，是支持TCP/IP协议的路通信的基本操作单元（逻辑上），是网络环境中进程间通信的API(现实意义上)。
 
-#### **恶意代码中常见的Windows函数列表**
+### **恶意代码中常见的Windows函数列表**
 
 - **[accept](https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-accept)**
 
@@ -236,7 +236,7 @@ HANDLE CreateFileMappingA(
 
 - **[CreateMutex](https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-createmutexa)**
 
-**创建一个互斥对象，可以被恶意代码用来确保某个时刻在系统上只有一个实例运行。恶意代码经常使用固定名字作为互斥对象名称，因此可以作为是否感染了恶意代码的一个主机特征。**
+创建一个互斥对象，可以被恶意代码用来确保某个时刻在系统上只有一个实例运行。恶意代码经常使用固定名字作为互斥对象名称，因此可以作为是否感染了恶意代码的一个主机特征。
 
 ```
 HANDLE CreateMutexA(
@@ -267,7 +267,7 @@ BOOL CreateProcessA(
 
 - **[CreateRemoteThread](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createremotethread)**
 
-**用于在另一个进程的虚拟地址空间创建一个线程。启动器和隐蔽性恶意代码经常使用此函数来将代码注入到其他进程中执行。**
+用于在另一个进程的虚拟地址空间创建一个线程。启动器和隐蔽性恶意代码经常使用此函数来将代码注入到其他进程中执行。
 
 ```
 HANDLE CreateRemoteThread(

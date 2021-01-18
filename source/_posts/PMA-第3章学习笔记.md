@@ -4,7 +4,7 @@ date: 2021-01-14 14:30:31
 tags: Practical Malware Analysis
 ---
 
-#### **动态分析基础技术**
+## **动态分析基础技术**
 
 1、使用沙箱运行恶意代码。沙箱能够提供容易理解的输出结果，对初始诊断非常有用。但是沙箱只能简单的运行可执行程序，没有命令行选项。并且沙箱不能记录所有事件，且由于不同的恶意代码有不同的特征，沙箱有很多局限性。
 
@@ -26,9 +26,9 @@ tags: Practical Malware Analysis
 
 10、使用INetSim伪装成某台服务器并模拟各种服务，从而分析恶意代码的网络行为。
 
-####  关于DLL文件
+###  关于DLL文件
 
-- ##### 查询DLL文件是32位还是64位
+- #### 查询DLL文件是32位还是64位
 
 **方法一**：
 
@@ -48,11 +48,11 @@ tags: Practical Malware Analysis
 
 ![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/14/PMA-%E7%AC%AC3%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.png)
 
-- ##### 关于32位文件和64位文件运行的问题：
+- #### 关于32位文件和64位文件运行的问题：
 
 32位的系统不能运行64位程序，但是64位的系统可以运行32位的程序。
 
-- ##### 加载dll文件
+- #### 加载dll文件
 
 1、使用PEView或者PE Explorer工具来查看导出函数列表。
 
