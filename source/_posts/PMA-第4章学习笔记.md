@@ -54,11 +54,11 @@ X86指令是汇编程序的构成块，由操作码和操作数或操作数地�
 
 如下图所示，程序每执行一步，EIP的值便发生对应的变化：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210115181342000.png)
+![执行前](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.png)
 
 
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210115181425724.png)
+![执行后](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/2.png)
 
 ##### 栈
 
@@ -66,7 +66,7 @@ X86指令是汇编程序的构成块，由操作码和操作数或操作数地�
 
 下图为函数调用时具体的栈帧情况：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210115174614100.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.png)
 
 函数调用的流程为：
 
@@ -98,7 +98,7 @@ test指令与and指令功能一样，但是不会修改其使用的操作数，�
 
 cpm指令与sub功能一样，但是其也不会修改其使用的操作数。cmp也只设置标志位，通常关注ZF和CF标志位。各类比较结果对应的标志位如下图所示：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210118170429409.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/4.png)
 
 **分支指令**
 
@@ -106,7 +106,7 @@ cpm指令与sub功能一样，但是其也不会修改其使用的操作数。cm
 
 大部分常见跳转指令如下表所示：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210118171939504.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/5.png)
 
 **重复指令**
 
@@ -114,7 +114,7 @@ cpm指令与sub功能一样，但是其也不会修改其使用的操作数。cm
 
 rep指令的终止条件如下表所示：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210118173626998.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210118173626998.png)
 
 rep前缀指令的常见搭配如下：
 
@@ -136,4 +136,4 @@ stosb指令用于将值存储到EDI指向的地址，其原理与scasb类似。�
 
 上述的rep指令示例如下：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210118180100970.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210118180100970.png)
