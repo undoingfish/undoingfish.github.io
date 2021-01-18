@@ -48,19 +48,19 @@
   </div>
 
   <!-- 文章目录 -->
-  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#X86%E6%B1%87%E7%BC%96"><span class="toc-text">X86汇编</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F"><span class="toc-text">指令格式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AD%97%E8%8A%82%E5%BA%8F"><span class="toc-text">字节序</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-text">寄存器</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%A0%88"><span class="toc-text">栈</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E6%B1%87%E7%BC%96%E6%8C%87%E4%BB%A4"><span class="toc-text">常用汇编指令</span></a></li></ol></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#X86%E6%B1%87%E7%BC%96"><span class="toc-text">X86汇编</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F"><span class="toc-text">指令格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E8%8A%82%E5%BA%8F"><span class="toc-text">字节序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-text">寄存器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%88"><span class="toc-text">栈</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E6%B1%87%E7%BC%96%E6%8C%87%E4%BB%A4"><span class="toc-text">常用汇编指令</span></a></li></ol></li></ol>
 
   <div class="post-content">
-    <h4 id="X86汇编"><a href="#X86汇编" class="headerlink" title="X86汇编"></a>X86汇编</h4><p>x86架构源于Intel的“8086”系列处理器，一开始是16位处理器，后来在16位的架构基础上进行修改，有了32位，Intel称之为IA-32，又称X86，当前主要指32位架构的CPU。而到64位时的CPU是新架构，其兼容X86，叫X86-64。X86使用的是CISC指令集（Complex instruction set computer）。</p>
-<h5 id="指令格式"><a href="#指令格式" class="headerlink" title="指令格式"></a><strong>指令格式</strong></h5><p>X86指令是汇编程序的构成块，由操作码和操作数或操作数地址构成，其中操作码通常占8位。</p>
+    <h2 id="X86汇编"><a href="#X86汇编" class="headerlink" title="X86汇编"></a>X86汇编</h2><p>x86架构源于Intel的“8086”系列处理器，一开始是16位处理器，后来在16位的架构基础上进行修改，有了32位，Intel称之为IA-32，又称X86，当前主要指32位架构的CPU。而到64位时的CPU是新架构，其兼容X86，叫X86-64。X86使用的是CISC指令集（Complex instruction set computer）。</p>
+<h3 id="指令格式"><a href="#指令格式" class="headerlink" title="指令格式"></a><strong>指令格式</strong></h3><p>X86指令是汇编程序的构成块，由操作码和操作数或操作数地址构成，其中操作码通常占8位。</p>
 <p>操作数表明了指令要使用的数据，有以下三种类型：</p>
 <p>1、立即数类型，即操作数是一个固定的值，格式形如0x42。</p>
 <p>2、寄存器类型，即操作数指向寄存器，格式形如ecx。</p>
 <p>3、内存地址类型，即操作数指向数值所在的内存地址，格式形如[eax]。</p>
-<h5 id="字节序"><a href="#字节序" class="headerlink" title="字节序"></a><strong>字节序</strong></h5><p>指在一个大数据项中数据的存储方式，具体分为以下两种：</p>
+<h3 id="字节序"><a href="#字节序" class="headerlink" title="字节序"></a><strong>字节序</strong></h3><p>指在一个大数据项中数据的存储方式，具体分为以下两种：</p>
 <p>大端存储：最高位被排在第一位（最低的地址上）。</p>
 <p>小端存储：最低为被排在第一位（最低的地址上）。</p>
-<h5 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a><strong>寄存器</strong></h5><p><strong>通用寄存器</strong></p>
+<h3 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a><strong>寄存器</strong></h3><p><strong>通用寄存器</strong></p>
 <p>包括EAX、EBX、ECX、EDX、EBP、ESP、ESI，大小都是32位，可以在汇编代码中以32位或者16位（去掉E）进行引用。EAX、EBX、ECX、EDX还能以8位值的方式进行引用，从而使用其最低的8位或者次低的8位，例如AL指向EAX寄存器的最低8位，AH指向其次低8位。</p>
 <p>通用寄存器一般用于存储数据或内存地址，乘法和除法的指令只能使用EAX和EDX，EAX通常存储了一个函数调用的返回值。</p>
 <p><strong>标志寄存器</strong></p>
@@ -74,7 +74,7 @@
 <p>如下图所示，程序每执行一步，EIP的值便发生对应的变化：</p>
 <p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.png" alt="执行前"></p>
 <p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/2.png" alt="执行后"></p>
-<h5 id="栈"><a href="#栈" class="headerlink" title="栈"></a><strong>栈</strong></h5><p>栈主要用于存放函数的内存、局部变量、控制流成结构等。与栈有关的寄存器有ESP（Extended Stack Pointer）和EBP（Extended Base Pointer），ESP是栈顶指针，在出入栈操作时其值发生变化，EBP是栈基址寄存器，其值在一个函数的执行过程中不会变化。在内存中，高地址相当于栈底，低地址相当于栈顶。栈主要用于管理函数调用时的数据交换。</p>
+<h3 id="栈"><a href="#栈" class="headerlink" title="栈"></a><strong>栈</strong></h3><p>栈主要用于存放函数的内存、局部变量、控制流成结构等。与栈有关的寄存器有ESP（Extended Stack Pointer）和EBP（Extended Base Pointer），ESP是栈顶指针，在出入栈操作时其值发生变化，EBP是栈基址寄存器，其值在一个函数的执行过程中不会变化。在内存中，高地址相当于栈底，低地址相当于栈顶。栈主要用于管理函数调用时的数据交换。</p>
 <p>下图为函数调用时具体的栈帧情况：</p>
 <p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.png"></p>
 <p>函数调用的流程为：</p>
@@ -85,7 +85,7 @@
 <p>5、通过函数的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Function_prologue">结语部分</a>恢复栈。并调整ESP来释放局部变量，释放后EBP将与ESP相等，而后EBP被弹出，被调用函数的栈被清空。</p>
 <p>6、ret指令被调用，此指令将Return Address中的返回地址赋值给EIP，程序将从原来发生调用的地方继续执行。</p>
 <p>7、调整栈，移除此前压入的参数。</p>
-<h5 id="常用汇编指令"><a href="#常用汇编指令" class="headerlink" title="常用汇编指令"></a><strong>常用汇编指令</strong></h5><p><strong>条件指令</strong></p>
+<h3 id="常用汇编指令"><a href="#常用汇编指令" class="headerlink" title="常用汇编指令"></a><strong>常用汇编指令</strong></h3><p><strong>条件指令</strong></p>
 <p>条件指令用于比较，并根据比较结果做出决定。常见的两个条件指令是test和cmp。</p>
 <p><em>test</em></p>
 <p>test指令与and指令功能一样，但是不会修改其使用的操作数，只设置标志位，通常关注ZF标志位。常见用法test eax, eax用于检查eax是否为NULL。</p>
