@@ -99,7 +99,7 @@
 <p><strong>重复指令</strong></p>
 <p>重复指令是一组操作数据缓冲区的指令，所谓数据缓冲区，通常是一个字节数组，也可以是单字或双字。常见的数据缓冲区操作指令是movsx、cmpsx、stosx和scasx，其中x可以是b、w或者d，分别表示字节、字和双字。这些指令还会用到ESI、EDI和ECX寄存器。ESI是源索引寄存器，EDI是目的索引寄存器，ECX寄存器是用作计数的变量。</p>
 <p>rep指令的终止条件如下表所示：</p>
-<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210118173626998.png"></p>
+<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/6.png"></p>
 <p>rep前缀指令的常见搭配如下：</p>
 <p><em>movsb</em></p>
 <p>movsb将一串字节从一个位置移动到另一个位置，字符串长度由ECX决定。rep movsb指令等价于C语言的memcpy函数。movsb从ESI指向的地址取出一个字节，将其存入EDI指向的地址并检查ECX的值是否为0，然后根据方向标志位DF的设置来决定ESI和EDI的值加1或者减1。当DF=0时加，否则进行减操作。此过程会不断重复直至ECX=0。</p>
@@ -110,7 +110,7 @@
 <p><em>stosb</em></p>
 <p>stosb指令用于将值存储到EDI指向的地址，其原理与scasb类似。若带有rep前缀，则会将一段内存缓冲区中的每个字节初始化为相同的值，等价于C语言的memset函数。</p>
 <p>上述的rep指令示例如下：</p>
-<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210118180100970.png"></p>
+<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/7.png"></p>
 
   </div>
   <div class="post-meta">
