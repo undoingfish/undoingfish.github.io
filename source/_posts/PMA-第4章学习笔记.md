@@ -1,0 +1,139 @@
+---
+title: PMA 第4章学习笔记
+date: 2021-01-15 15:24:33
+tags: Practical Malware Analysis
+---
+
+#### X86汇编
+
+x86架构源于Intel的“8086”系列处理器，一开始是16位处理器，后来在16位的架构基础上进行修改，有了32位，Intel称之为IA-32，又称X86，当前主要指32位架构的CPU。而到64位时的CPU是新架构，其兼容X86，叫X86-64。X86使用的是CISC指令集（Complex instruction set computer）。
+
+##### 指令格式
+
+X86指令是汇编程序的构成块，由操作码和操作数或操作数地址构成，其中操作码通常占8位。
+
+操作数表明了指令要使用的数据，有以下三种类型：
+
+1、立即数类型，即操作数是一个固定的值，格式形如0x42。
+
+2、寄存器类型，即操作数指向寄存器，格式形如ecx。
+
+3、内存地址类型，即操作数指向数值所在的内存地址，格式形如[eax]。
+
+##### 字节序
+
+指在一个大数据项中数据的存储方式，具体分为以下两种：
+
+大端存储：最高位被排在第一位（最低的地址上）。
+
+小端存储：最低为被排在第一位（最低的地址上）。
+
+##### 寄存器
+
+**通用寄存器**
+
+包括EAX、EBX、ECX、EDX、EBP、ESP、ESI，大小都是32位，可以在汇编代码中以32位或者16位（去掉E）进行引用。EAX、EBX、ECX、EDX还能以8位值的方式进行引用，从而使用其最低的8位或者次低的8位，例如AL指向EAX寄存器的最低8位，AH指向其次低8位。
+
+通用寄存器一般用于存储数据或内存地址，乘法和除法的指令只能使用EAX和EDX，EAX通常存储了一个函数调用的返回值。
+
+**标志寄存器**
+
+名称是EFLAGS，其每一位或被置0，或被置1。比较重要的标志如下：
+
+*ZF：*运算结果为0时ZF被置1，否则为0。
+
+*CF：*运算结果相对于目标操作数太大或太小时被置1，否则置0。
+
+*SF：*运算结果为负数时置1，否则置0。
+
+*TF：*主要用于调试，当其被置1时，每次只执行一条指令。
+
+**指令指针EIP**
+
+在x86架构中，EIP寄存器又称为Extended Instruction Pointer，其存放的是一个指针，该指针永远指向下一条等待执行的指令地址。倘若EIP指向了一个不包含合法指令的内存地址时，则正在运行的程序将会崩溃。因此控制了EIP时，便控制了CPU将要执行的指令。
+
+如下图所示，程序每执行一步，EIP的值便发生对应的变化：
+
+![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210115181342000.png)
+
+
+
+![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210115181425724.png)
+
+##### 栈
+
+栈主要用于存放函数的内存、局部变量、控制流成结构等。与栈有关的寄存器有ESP（Extended Stack Pointer）和EBP（Extended Base Pointer），ESP是栈顶指针，在出入栈操作时其值发生变化，EBP是栈基址寄存器，其值在一个函数的执行过程中不会变化。在内存中，高地址相当于栈底，低地址相当于栈顶。栈主要用于管理函数调用时的数据交换。
+
+下图为函数调用时具体的栈帧情况：
+
+![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210115174614100.png)
+
+函数调用的流程为：
+
+1、push指令将参数压入栈中，编译器或系统不同时，参数入栈顺序不同，例如在C语言中，入栈顺序为从右到左的顺序入栈，即如上图所示的Argument N —— Argument 1。
+
+2、使用call memory_location来调用函数，此时EIP寄存器中的内容被压入栈中。在上图对应的是Return Address。当被调用的函数执行结束后，读取Return Address的内容将返回到主代码使得程序继续执行。在某个函数开始执行时，EIP的值被设置为memory_location，亦即函数的起始地址。
+
+3、EBP被压入栈中，并被赋予当前ESP的值，作为调用函数的EBP，以区分不同函数的不同栈地址范围，在上图对应的是Old EBP。同时通过函数的[序言部分](https://en.wikipedia.org/wiki/Function_prologue)分配栈中用于存储局部变量的空间，局部变量入栈（Local Variable 1 —— Local Variable N）。
+
+4、被调用的函数开始执行。
+
+5、通过函数的[结语部分](https://en.wikipedia.org/wiki/Function_prologue)恢复栈。并调整ESP来释放局部变量，释放后EBP将与ESP相等，而后EBP被弹出，被调用函数的栈被清空。
+
+6、ret指令被调用，此指令将Return Address中的返回地址赋值给EIP，程序将从原来发生调用的地方继续执行。
+
+7、调整栈，移除此前压入的参数。
+
+##### 常用汇编指令
+
+**条件指令**
+
+条件指令用于比较，并根据比较结果做出决定。常见的两个条件指令是test和cmp。
+
+*test*
+
+test指令与and指令功能一样，但是不会修改其使用的操作数，只设置标志位，通常关注ZF标志位。常见用法test eax, eax用于检查eax是否为NULL。
+
+*cmp*
+
+cpm指令与sub功能一样，但是其也不会修改其使用的操作数。cmp也只设置标志位，通常关注ZF和CF标志位。各类比较结果对应的标志位如下图所示：
+
+![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210118170429409.png)
+
+**分支指令**
+
+常见的分支指令是跳转指令，跳转指令又分为无条件跳转和条件跳转指令。常见的无条件跳转指令是jmp指令，指令格式为jmp location。由于汇编代码中没有if语句，而无条件跳转指令无法实现此需求，因此使用条件跳转来实现。
+
+大部分常见跳转指令如下表所示：
+
+![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210118171939504.png)
+
+**重复指令**
+
+重复指令是一组操作数据缓冲区的指令，所谓数据缓冲区，通常是一个字节数组，也可以是单字或双字。常见的数据缓冲区操作指令是movsx、cmpsx、stosx和scasx，其中x可以是b、w或者d，分别表示字节、字和双字。这些指令还会用到ESI、EDI和ECX寄存器。ESI是源索引寄存器，EDI是目的索引寄存器，ECX寄存器是用作计数的变量。
+
+rep指令的终止条件如下表所示：
+
+![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210118173626998.png)
+
+rep前缀指令的常见搭配如下：
+
+*movsb*
+
+movsb将一串字节从一个位置移动到另一个位置，字符串长度由ECX决定。rep movsb指令等价于C语言的memcpy函数。movsb从ESI指向的地址取出一个字节，将其存入EDI指向的地址并检查ECX的值是否为0，然后根据方向标志位DF的设置来决定ESI和EDI的值加1或者减1。当DF=0时加，否则进行减操作。此过程会不断重复直至ECX=0。
+
+*cmpsb*
+
+cmpsb指令用于比较两串字节，以确定其是否是相同的数据。cmpsb将ESI指向地址的字节减去EDI指向地址的字节，并更新相应的标志位，直到发现一处不同或者全部比较完成。若有repe前缀，则检查ECX的标志位，如果ECX=0或者ZF=0，则操作终止。其功能等价于C语言的memcmp函数。
+
+*scasb*
+
+scasb指令用于从一串ESI指向的地址中存储的字节里，搜索一个由AL寄存器给出的值。其工作方式与cmpsb类似。若带有repe前缀，则比较操作会不断重复，直到找到目标值或者ECX=0。找到的目标值将会被存储在ESI中。
+
+*stosb*
+
+stosb指令用于将值存储到EDI指向的地址，其原理与scasb类似。若带有rep前缀，则会将一段内存缓冲区中的每个字节初始化为相同的值，等价于C语言的memset函数。
+
+上述的rep指令示例如下：
+
+![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210118180100970.png)
