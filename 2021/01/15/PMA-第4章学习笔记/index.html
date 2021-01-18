@@ -72,11 +72,11 @@
 <p><strong>指令指针EIP</strong></p>
 <p>在x86架构中，EIP寄存器又称为Extended Instruction Pointer，其存放的是一个指针，该指针永远指向下一条等待执行的指令地址。倘若EIP指向了一个不包含合法指令的内存地址时，则正在运行的程序将会崩溃。因此控制了EIP时，便控制了CPU将要执行的指令。</p>
 <p>如下图所示，程序每执行一步，EIP的值便发生对应的变化：</p>
-<p><img src="C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210115181342000.png"></p>
-<p><img src="C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210115181425724.png"></p>
+<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.png" alt="执行前"></p>
+<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/2.png" alt="执行后"></p>
 <h5 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h5><p>栈主要用于存放函数的内存、局部变量、控制流成结构等。与栈有关的寄存器有ESP（Extended Stack Pointer）和EBP（Extended Base Pointer），ESP是栈顶指针，在出入栈操作时其值发生变化，EBP是栈基址寄存器，其值在一个函数的执行过程中不会变化。在内存中，高地址相当于栈底，低地址相当于栈顶。栈主要用于管理函数调用时的数据交换。</p>
 <p>下图为函数调用时具体的栈帧情况：</p>
-<p><img src="C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210115174614100.png"></p>
+<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.png"></p>
 <p>函数调用的流程为：</p>
 <p>1、push指令将参数压入栈中，编译器或系统不同时，参数入栈顺序不同，例如在C语言中，入栈顺序为从右到左的顺序入栈，即如上图所示的Argument N —— Argument 1。</p>
 <p>2、使用call memory_location来调用函数，此时EIP寄存器中的内容被压入栈中。在上图对应的是Return Address。当被调用的函数执行结束后，读取Return Address的内容将返回到主代码使得程序继续执行。在某个函数开始执行时，EIP的值被设置为memory_location，亦即函数的起始地址。</p>
@@ -91,15 +91,15 @@
 <p>test指令与and指令功能一样，但是不会修改其使用的操作数，只设置标志位，通常关注ZF标志位。常见用法test eax, eax用于检查eax是否为NULL。</p>
 <p><em>cmp</em></p>
 <p>cpm指令与sub功能一样，但是其也不会修改其使用的操作数。cmp也只设置标志位，通常关注ZF和CF标志位。各类比较结果对应的标志位如下图所示：</p>
-<p><img src="C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210118170429409.png"></p>
+<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/4.png"></p>
 <p><strong>分支指令</strong></p>
 <p>常见的分支指令是跳转指令，跳转指令又分为无条件跳转和条件跳转指令。常见的无条件跳转指令是jmp指令，指令格式为jmp location。由于汇编代码中没有if语句，而无条件跳转指令无法实现此需求，因此使用条件跳转来实现。</p>
 <p>大部分常见跳转指令如下表所示：</p>
-<p><img src="C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210118171939504.png"></p>
+<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/5.png"></p>
 <p><strong>重复指令</strong></p>
 <p>重复指令是一组操作数据缓冲区的指令，所谓数据缓冲区，通常是一个字节数组，也可以是单字或双字。常见的数据缓冲区操作指令是movsx、cmpsx、stosx和scasx，其中x可以是b、w或者d，分别表示字节、字和双字。这些指令还会用到ESI、EDI和ECX寄存器。ESI是源索引寄存器，EDI是目的索引寄存器，ECX寄存器是用作计数的变量。</p>
 <p>rep指令的终止条件如下表所示：</p>
-<p><img src="C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210118173626998.png"></p>
+<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210118173626998.png"></p>
 <p>rep前缀指令的常见搭配如下：</p>
 <p><em>movsb</em></p>
 <p>movsb将一串字节从一个位置移动到另一个位置，字符串长度由ECX决定。rep movsb指令等价于C语言的memcpy函数。movsb从ESI指向的地址取出一个字节，将其存入EDI指向的地址并检查ECX的值是否为0，然后根据方向标志位DF的设置来决定ESI和EDI的值加1或者减1。当DF=0时加，否则进行减操作。此过程会不断重复直至ECX=0。</p>
@@ -110,7 +110,7 @@
 <p><em>stosb</em></p>
 <p>stosb指令用于将值存储到EDI指向的地址，其原理与scasb类似。若带有rep前缀，则会将一段内存缓冲区中的每个字节初始化为相同的值，等价于C语言的memset函数。</p>
 <p>上述的rep指令示例如下：</p>
-<p><img src="C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210118180100970.png"></p>
+<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210118180100970.png"></p>
 
   </div>
   <div class="post-meta">
