@@ -114,7 +114,7 @@ cpm指令与sub功能一样，但是其也不会修改其使用的操作数。cm
 
 rep指令的终止条件如下表所示：
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210118173626998.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/6.png)
 
 rep前缀指令的常见搭配如下：
 
@@ -136,4 +136,4 @@ stosb指令用于将值存储到EDI指向的地址，其原理与scasb类似。�
 
 上述的rep指令示例如下：
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/image-20210118180100970.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/01/15/PMA-%E7%AC%AC4%E7%AB%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/7.png)
