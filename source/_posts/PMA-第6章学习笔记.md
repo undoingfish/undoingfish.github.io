@@ -28,17 +28,17 @@ fastcall：不涉及更多的栈操作
 
 --：sub
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310140224428.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/1.png)
 
 ## If结构
 
 每个if语句必定有一个条件跳转
 
- ![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310140245890.png)
+ ![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/2.png)
 
 嵌套if语句有多个跳转
 
- ![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310140539397.png)
+ ![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/3.png)
 
 ## 循环
 
@@ -54,13 +54,13 @@ fastcall：不涉及更多的栈操作
 
 for循环内部有一处条件跳转，以便中止循环。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310140939035.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/4.png)
 
 ### While循环
 
 循环结尾处有一个无条件跳转，循环内部有一个条件跳转，循环变量的递增可以不使用。
 
- ![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310141106667.png)
+ ![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/5.png)
 
 ## Switch结构
 
@@ -68,13 +68,13 @@ for循环内部有一处条件跳转，以便中止循环。
 
 结构的开始处根据case情况进行跳转
 
- ![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310141259052.png) 
+ ![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/6.png) 
 
 2、 通过跳转表样式
 
 基于跳转表目标的位置，edx乘以4加上跳转表的基址进行跳转，其中跳转表中的每一项是4个字节大小的地址。
 
- ![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310141516435.png)
+ ![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/7.png)
 
 ## 数组结构
 
@@ -82,7 +82,7 @@ for循环内部有一处条件跳转，以便中止循环。
 
 2、 局部数组类似于局部变量，存储于栈中，再使用栈地址+偏移
 
- ![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310141729579.png)
+ ![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/8.png)
 
  
 
@@ -94,6 +94,6 @@ for循环内部有一处条件跳转，以便中止循环。
 
 链表遍历使用指针结构，指针指向的是同一类型的对象，并且这些对象具有递归性，例如某个变量被赋予eax，eax来自于eax的自增，而eax的自增又来自于该变量，即形成了递归。
 
- ![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310141854178.png)
+ ![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/9.png)
 
  
