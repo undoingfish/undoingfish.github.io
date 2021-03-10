@@ -346,7 +346,9 @@ IMAGE_IMPORT_BY_NAME结构如下：
 
 整个PE文件实例的完整分析可见[Lab-01-1](https://github.com/undoingfish/undoingfish.github.io/blob/hexo/pic/lab01-1.pdf)。
 
- 
+《加密与解密》第四版中PE文件格式的概括图：
+
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/36.png)
 
  
 
@@ -356,8 +358,3 @@ IMAGE_IMPORT_BY_NAME结构如下：
 
  
 
- 
-
- 
-
-![img](file:///C:/Users/zengf/AppData/Local/Temp/msohtmlclip1/01/clip_image091.jpg)
