@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>PMA 第6章学习笔记 - undoingfish的博客</title>
+  <link rel="icon" href="https://i.imgur.com/SrZt9VU.jpg" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=Practical Malware Analysis>
+  
+  
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">undoingfish的博客</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">PMA 第6章学习笔记</h1>
+  </div>
+
+  <!-- 文章目录 -->
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8EC%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84"><span class="toc-text">汇编语言与C代码结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F%E5%92%8C%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F"><span class="toc-text">全局变量和局部变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E7%BA%A6%E5%AE%9A"><span class="toc-text">函数调用约定</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%97%E6%9C%AF%E6%93%8D%E4%BD%9C"><span class="toc-text">算术操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#If%E7%BB%93%E6%9E%84"><span class="toc-text">If结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF"><span class="toc-text">循环</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#for%E5%BE%AA%E7%8E%AF"><span class="toc-text">for循环</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#While%E5%BE%AA%E7%8E%AF"><span class="toc-text">While循环</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Switch%E7%BB%93%E6%9E%84"><span class="toc-text">Switch结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%BB%93%E6%9E%84"><span class="toc-text">数组结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-text">结构体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8%E9%81%8D%E5%8E%86"><span class="toc-text">链表遍历</span></a></li></ol></li></ol>
+
+  <div class="post-content">
+    <h1 id="汇编语言与C代码结构"><a href="#汇编语言与C代码结构" class="headerlink" title="汇编语言与C代码结构"></a>汇编语言与C代码结构</h1><h2 id="全局变量和局部变量"><a href="#全局变量和局部变量" class="headerlink" title="全局变量和局部变量"></a>全局变量和局部变量</h2><p>全局变量：通过内存地址引用，类似于dword_10CF60地址来进行标记</p>
+<p>局部变量：通过栈地址引用，类似于[ebp-4]或者[ebp+var_4]</p>
+<h2 id="函数调用约定"><a href="#函数调用约定" class="headerlink" title="函数调用约定"></a>函数调用约定</h2><p>cdecl约定：参数从右到左的顺序入栈，需要调用者add esp清理栈</p>
+<p>stdcall：自动清理栈。</p>
+<p>fastcall：不涉及更多的栈操作</p>
+<h2 id="算术操作"><a href="#算术操作" class="headerlink" title="算术操作"></a>算术操作</h2><p>++：add</p>
+<p>–：sub</p>
+<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/1.png"></p>
+<h2 id="If结构"><a href="#If结构" class="headerlink" title="If结构"></a>If结构</h2><p>每个if语句必定有一个条件跳转</p>
+<p> <img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/2.png"></p>
+<p>嵌套if语句有多个跳转</p>
+<p> <img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/3.png"></p>
+<h2 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h2><h3 id="for循环"><a href="#for循环" class="headerlink" title="for循环"></a>for循环</h3><p>1、 循环变量的初始化</p>
+<p>2、 循环变量的递增</p>
+<p>3、 循环变量的比较</p>
+<p>4、 跳转回到循环开始位置</p>
+<p>for循环内部有一处条件跳转，以便中止循环。</p>
+<p><img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/4.png"></p>
+<h3 id="While循环"><a href="#While循环" class="headerlink" title="While循环"></a>While循环</h3><p>循环结尾处有一个无条件跳转，循环内部有一个条件跳转，循环变量的递增可以不使用。</p>
+<p> <img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/5.png"></p>
+<h2 id="Switch结构"><a href="#Switch结构" class="headerlink" title="Switch结构"></a>Switch结构</h2><p>1、 通过if样式</p>
+<p>结构的开始处根据case情况进行跳转</p>
+<p> <img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/6.png"> </p>
+<p>2、 通过跳转表样式</p>
+<p>基于跳转表目标的位置，edx乘以4加上跳转表的基址进行跳转，其中跳转表中的每一项是4个字节大小的地址。</p>
+<p> <img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/7.png"></p>
+<h2 id="数组结构"><a href="#数组结构" class="headerlink" title="数组结构"></a>数组结构</h2><p>1、 全局数组类似于全局变量，使用内存地址，即基址+偏移</p>
+<p>2、 局部数组类似于局部变量，存储于栈中，再使用栈地址+偏移</p>
+<p> <img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/8.png"></p>
+<h2 id="结构体"><a href="#结构体" class="headerlink" title="结构体"></a>结构体</h2><p>全局变量结构体存储在内存，使用内存进行访问，通过IDA Pro结构体窗口可以自定义结构体，并赋给内存引用。</p>
+<h2 id="链表遍历"><a href="#链表遍历" class="headerlink" title="链表遍历"></a>链表遍历</h2><p>链表遍历使用指针结构，指针指向的是同一类型的对象，并且这些对象具有递归性，例如某个变量被赋予eax，eax来自于eax的自增，而eax的自增又来自于该变量，即形成了递归。</p>
+<p> <img src="https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/10/9.png"></p>
+
+  </div>
+  <div class="post-meta">
+    <span class="post-time" style="color:#646060;font-size:13px">2021-02-10</span>
+  </div>
+
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Practical-Malware-Analysis/" rel="tag">Practical Malware Analysis</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+
+<!-- 评论插件 -->
+
+<footer>
+  2021
+  <span class="author">
+    undoingfish
+  </span>
+</footer>
+
+
+    </div>
+  </body>
+</html>
