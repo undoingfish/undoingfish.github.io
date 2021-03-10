@@ -348,7 +348,7 @@ IMAGE_IMPORT_BY_NAME结构如下：
 
 《加密与解密》第四版中PE文件格式的概括图：
 
-![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/36.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/36.jpg)
 
  
 
