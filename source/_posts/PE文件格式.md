@@ -10,7 +10,7 @@ PE文件是Windows操作系统下使用的可执行文件格式，全称为Porta
 
 ## PE文件种类
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310155509227.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/1.png)
 
 ## 几个重要的地址
 
@@ -28,7 +28,7 @@ PE头存储了文件运行需要的所有信息，例如内存加载方式、运
 
 PE文件=PE头+PE体，不同的书本对此的叙述不同，例如，在《逆向工程核心原理》“第13章 PE文件格式”中，DOS头到节区头是属于PE头，剩下的是PE体；在《加密与解密（第四版）》“第11章 PE文件格式”中，DOS头不包含在PE头中。在《恶意代码分析实战》第一章节中，则未提及到DOS头的存在，另外本文所使用的文件为《恶意代码分析实战》书中的Lab-01-1.dll文件，关于PE头文件的结构体，比较重要的字段在本文中会被加粗。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310150228076.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/2.png)
 
 ### DOS头
 
@@ -36,21 +36,21 @@ PE文件=PE头+PE体，不同的书本对此的叙述不同，例如，在《逆
 
 DOS头中存储的是一个名为IMAGE_DOS_HEADER的结构体，其大小为40字节，即18个word型变量和一个long型变量，其中long型变量为32位，即4个字节，word变量16位，即2个字节，18个word共36个字节。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310150525126.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/3.png)
 
 比较重要的两个字段是**e_maigic**和**e_lfanew**，前者是指DOS签名，其值为4D5A，对应的ASCII值为“MZ”，取自其设计者Mark Zbikowski名字的首字母。e_lfanew则指示NT头的偏移，使用小端存储，因此下图中的值为0x000000E0h，以及表示在0x000000E0h处开始，是NT头的开始。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310150555696.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/4.png)
 
 文件在IDA pro以PE格式加载的hex view中，不显示此字段：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310150735435.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/5.png)
 
 ### DOS stub
 
 stub意为“存根”，DOS头之后便是DOS stub，其为一个可选项，大小不固定的区域，通常由编译器或者汇编器生成，在上图的例子中此字段为00000040行至000000D0行。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310150804577.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/6.png)
 
 ### NT头
 
@@ -58,7 +58,7 @@ stub意为“存根”，DOS头之后便是DOS stub，其为一个可选项，�
 
 接下来的分节是NT头，NT头包括IMAGE_NT_HEADERS，其大小为。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310151123862.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/7.png)
 
 **Signature**：字段的值为0x50450000h，对应的是“PE00“字符；
 
@@ -66,15 +66,15 @@ stub意为“存根”，DOS头之后便是DOS stub，其为一个可选项，�
 
 Signature字段后面是IMAGE_FILE_HEADER结构体， IMAGE_FILE_HEADER内容如下所示，其大小为4\*3+4*2=20个字节。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310151520172.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/8.png)
 
 对应文件中的各个字段：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310151544456.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/9.png)
 
 1、**Machine**：表示了每个CPU的Machine码，例如兼容Intel x86芯片的Machine码为014Ch，各类CPU的Machine码可参考winnt.h文件的定义，常见标识如下
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310151610828.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/10.png)
 
 2、**NumberOfSections**：表示的是节区数，当定义的节区数与实际节区数不同是，PE文件将发生运行错误。
 
@@ -88,17 +88,17 @@ Signature字段后面是IMAGE_FILE_HEADER结构体， IMAGE_FILE_HEADER内容如
 
 7、**Characteristics**：用于标识文件属性，例如文件是否为可运行的形态、是否为DLL……，如下表所示：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310151950839.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/11.png)
 
 ##### **IMAGE_OPTIONAL_HEADER**
 
 IMAGE_OPTIONAL_HEADER结构体在IMAGE_NT_HEADERS结构体后面。此结构体是可选的，在此结构体中可以定义更多的PE文件属性，因此将IMAGE_OPTIONAL_HEADER结构与IMAGE_FILE_HEADER结构结合便是完整的PE文件头结构。IMAGE_OPTIONAL_HEADER结构是PE头结构体中最大的。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310152537309.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/12.png)
 
 实例中对应的字段如下：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310152601659.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/13.png)
 
 1、**magic**：0107h时表示文件是ROM映像，010Bh时表示文件是32位普通可执行映像，020Bh时表示文件是64位可执行映像。
 
@@ -114,11 +114,11 @@ IMAGE_OPTIONAL_HEADER结构体在IMAGE_NT_HEADERS结构体后面。此结构体�
 
 7、**AddressOfEntryPoint**：程序执行入口的相对虚拟地址（RVA），指定了程序执行的初始地址，此值非常重要，在使用OllyDBG调试时最开始定位到此位置。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310152640088.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/14.png)
 
 8、BaseOfCode：代码段的起始相对虚拟地址（RVA），在使用IDA分析文件时，最开始将自动定位到此地址。在内存中，代码段通常在PE文件头之后，数据块之前。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310152700012.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/15.png)
 
 9、BaseOfData：数据段的起始RVA。数据段通常在内存的末尾，即PE文件头和代码段之后，此值在64位可执行文件中不会出现。
 
@@ -150,7 +150,7 @@ IMAGE_OPTIONAL_HEADER结构体在IMAGE_NT_HEADERS结构体后面。此结构体�
 
 23、**Subsystem**：此字段值通常只对EXE重要，不同值对应不同的subsystem类型。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310152720836.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/16.png)
 
 24、DllCharacteristics：DllMain()函数何时被调用。
 
@@ -170,25 +170,25 @@ IMAGE_OPTIONAL_HEADER结构体在IMAGE_NT_HEADERS结构体后面。此结构体�
 
 31、**DataDirectory**：数据目录表，由数个相同的IMAGE_DATA_DIRECTORY结构组成的数组，值项import table、export table、resource等数据。每个IMAGE_DATA_DIRECTORY结构大小为8字节，其中重要的项为EXPORT、IMPORT、RESOURCE、TLS。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310152838733.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/17.png)
 
 PE文件在定位import table、export table、resource等重要数据时，便是从IMAGE_DATA_DIRECTORY结构开始的。
 
 在本例中，数据目录表内容如下，若export table和import table都为0，则表示无输出表和输入表，本例中都不为0，说明有输入表和输出表：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310160137188.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/18.png)
 
 [IMAGE_DATA_DIRECTORY](https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_data_directory)结构体详细内容如下，8字节中，有4字节表示虚拟地址，4字节表示大小，结合本例，export table地址为0x000021B0h，大小为0x00023E16h，import table地址为0x0000205Ch，大小为0x00000050h：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310152917354.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/19.png)
 
 使用PE Tools查看PE文件信息：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310152935741.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/20.png)
 
 PEiD工具与PE Tool工具分析同一文件所得到的信息对比：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310153001376.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/21.png)
 
 ### 节区头
 
@@ -198,11 +198,11 @@ PEiD工具与PE Tool工具分析同一文件所得到的信息对比：
 
 IMAGE_SECTION_HEADER结构定义如下：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310153234516.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/22.png)
 
 本文例子中第一个IMAGE_SECTION_HEADER结构内容：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310153310948.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/23.png)
 
 1、 Name：大小为8字节的块名。
 
@@ -224,13 +224,13 @@ IMAGE_SECTION_HEADER结构定义如下：
 
 10、**Characteristics**：该字段指明块属性，例如代码/数据、可读/可写等标志，字段由下列值组合而成。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310153523362.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/24.png)
 
  
 
 PE文件一般至少由两个区块，一个是代码块，另一个是数据块，常见区块见下表。如果两个区块具有相似或者一致的属性，那么链接器在链接时会把它们合并成一个区块，这样便能节省磁盘和内存空间，区块的合并规则在此不赘述。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310153839678.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/25.png)
 
 此表格内容对应了第一章节中的以下表格：
 
@@ -256,7 +256,7 @@ IAT，全称Import Address Table，又名导入地址表。其主要用于实现
 
 IAT的主要结构为IMAGE_IMPORT_DESCRIPTOR，如下所示：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310154202344.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/26.png)
 
 1、**OriginalFirstThunk**：指向输入名称表INT的地址（RVA），INT是一个IMAGE_THUNK_DATA结构的数组，数组的每个IMAGE_THUNK_DATA结构都指向IMAGE_IMPORT_BY_NAME结构。
 
@@ -270,13 +270,13 @@ IAT的主要结构为IMAGE_IMPORT_DESCRIPTOR，如下所示：
 
 FirstThunk和OriginalFirstThunk相似，两者分别指向两个本质上相同的IMAGE_THUNK_DATA结构。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310154258385.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/27.png)
 
 ##### IMAGE_THUNK_DATA
 
 IMAGE_THUNK_DATA结构如下，注意其成员是一个union结构：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310154516032.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/28.png)
 
 当IMAGE_THUNK_DATA值的最高位为1是，表示函数以序号方式输入，则此时低31位表示一个函数序号。当其最高位为0时，表示函数以字符串函数名的方式输入，此时双字的值是一个RVA，指向一个IMAGE_IMPORT_BY_NAME结构。
 
@@ -284,7 +284,7 @@ IMAGE_THUNK_DATA结构如下，注意其成员是一个union结构：
 
 IMAGE_IMPORT_BY_NAME结构如下：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310154422936.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/29.png)
 
 1、Hint：表示本函数在其所驻留DLL的输出表中的序号。该域被PE装载器用来在DLL的输出表里快速查询函数，此项为可选项。
 
@@ -292,17 +292,17 @@ IMAGE_IMPORT_BY_NAME结构如下：
 
 输入表在IMAGE_FILE_HEADER结构体的80h偏移位置，在本例中，其地址为E0h+80h=160h，160h处的值为5c200000h，亦即0000205c，通过PE tools知道该地址在.rdata分节，而Δk=0，Δk=Virtual Offset – Raw Offset，同样在PE tools中可以计算得本例中Δk=0，因此可以直接跳转到0000205c的位置。从0000205c开始，便是IMAGE_IMPORT_DESCRIPTOR的五个字段，每个字段四字节，最后一组IMAGE_IMPORT_DESCRIPTOR的值全为0。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310154556571.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/30.png)
 
 以第一个IMAGE_IMPORT_DESCRIPTOR为例，
 
 1、 其Name中的地址为214E，214E中的地址便是需要导入的DLL名称。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310154613355.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/31.png)
 
 2、其OriginalFirstThunk中的地址为20AC，20AC中的地址为2116，且20AC后还有四个地址，都存储着要调用的DLL中的函数名称，如下所示。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310154627638.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/32.png)
 
 ### 输出表(EAT)
 
@@ -312,7 +312,7 @@ IMAGE_IMPORT_BY_NAME结构如下：
 
 输出表的结构体名称为IMAGE_EXPORT_DIRECTORY，其定义如下：
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310154725250.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/33.png)
 
 1、 Characteristics：输出属性的标志，目前未使用，其值为0。
 
@@ -338,21 +338,13 @@ IMAGE_IMPORT_BY_NAME结构如下：
 
 类似查找导入表，导出表的位置在DataDirectory[1]中的VirtualAddress字段，其中的值为000021B0。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310154802489.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/34.png)
 
 000021B0处便是IMAGE_EXPORT_DIRECTORY结构的各项字段，本例中各字段全为0，因此无导出函数。
 
-![](C:\Users\zengf\AppData\Roaming\Typora\typora-user-images\image-20210310155150292.png)
+![](https://raw.githubusercontent.com/undoingfish/undoingfish.github.io/hexo/pic/2021/02/16/35.png)
 
 整个PE文件实例的完整分析可见[Lab-01-1](https://github.com/undoingfish/undoingfish.github.io/blob/hexo/pic/lab01-1.pdf)。
-
- 
-
- 
-
- 
-
- 
 
  
 
