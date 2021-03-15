@@ -84,7 +84,6 @@
 <ul>
 <li><strong>结构数组的访问</strong></li>
 </ul>
-<p><img src="file:///C:/Users/zengf/AppData/Local/Temp/msohtmlclip1/01/clip_image008.png" alt="img"></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library[<span class="number">0</span>].value;				<span class="comment">/*访问第一个数组元素的value成员*/</span></span><br><span class="line">library[<span class="number">4</span>].title;				<span class="comment">/*访问第五个数组元素的title成员*/</span></span><br></pre></td></tr></table></figure>
 <h4 id="指向结构的指针"><a href="#指向结构的指针" class="headerlink" title="指向结构的指针"></a>指向结构的指针</h4><ul>
 <li><strong>声明</strong></li>
@@ -115,8 +114,6 @@
 </ul>
 <p>把一个结构复制给另一个结构：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">names</span> <span class="title">rignt_filed</span> =</span> &#123;<span class="string">&quot;Ruthie&quot;</span>, <span class="string">&quot;George&quot;</span>&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">names</span> <span class="title">captain</span> =</span> right_field;			<span class="comment">//把一个结构初始化为另一个结构</span></span><br></pre></td></tr></table></figure>
-
-
 <h2 id="union"><a href="#union" class="headerlink" title="union"></a>union</h2><h4 id="设计初衷-1"><a href="#设计初衷-1" class="headerlink" title="设计初衷"></a>设计初衷</h4><p>用于存储既无规律、事先也不知道顺序的混合类型。Union类型只能存储一个值。</p>
 <h4 id="基本用法-1"><a href="#基本用法-1" class="headerlink" title="基本用法"></a>基本用法</h4><ul>
 <li><strong>定义</strong></li>
