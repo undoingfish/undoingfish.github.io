@@ -74,8 +74,6 @@ struct book library[MAXBKS]; 	/* book类型结构的数组 */
 
 - **结构数组的访问**
 
-![img](file:///C:/Users/zengf/AppData/Local/Temp/msohtmlclip1/01/clip_image008.png)
-
 ```c
 library[0].value;				/*访问第一个数组元素的value成员*/
 library[4].title;				/*访问第五个数组元素的title成员*/
@@ -132,8 +130,6 @@ sum(stan);
 struct names rignt_filed = {"Ruthie", "George"};
 struct names captain = right_field;			//把一个结构初始化为另一个结构
 ```
-
- 
 
 ## union
 
