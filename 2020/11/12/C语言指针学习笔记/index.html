@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>C语言指针学习笔记 - undoingfish的博客</title>
+  <link rel="icon" href="https://i.imgur.com/SrZt9VU.jpg" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=Programming Language>
+  
+  
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">undoingfish的博客</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link">Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">Archives</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">C语言指针学习笔记</h1>
+  </div>
+
+  <!-- 文章目录 -->
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E9%92%88%E7%AE%80%E4%BB%8B"><span class="toc-text">指针简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-text">相关概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E9%92%88%E7%9A%84%E5%A3%B0%E6%98%8E"><span class="toc-text">指针的声明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%8C%87%E9%92%88%E5%9C%A8%E5%87%BD%E6%95%B0%E4%B9%8B%E9%97%B4%E9%80%9A%E4%BF%A1"><span class="toc-text">使用指针在函数之间通信</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E9%92%88%E5%92%8C%E6%95%B0%E7%BB%84"><span class="toc-text">指针和数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E3%80%81%E6%95%B0%E7%BB%84%E5%92%8C%E6%8C%87%E9%92%88c"><span class="toc-text">函数、数组和指针c</span></a></li></ol>
+
+  <div class="post-content">
+    <h2 id="指针简介"><a href="#指针简介" class="headerlink" title="指针简介"></a>指针简介</h2><p>从根本上看，指针是一个值为内存地址的变量，正如char类型变量的值是字符，int类型变量的值是整数，指针变量的值是地址。</p>
+<h2 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h2><p><strong>赋值</strong></p>
+<p>可以把地址赋给指针，例如数组名、带地址运算符&amp;的变量名、另一个指针。</p>
+<p><strong>地址运算符&amp;</strong></p>
+<p>又称取指，当其后面跟一个变量名时，&amp; 给出该变量的地址。另外和所有变量一样，指针变量也有自己的地址和值，对于指针而言，&amp;运算符给出指针本身的地址。</p>
+<p><strong>地址运算符*</strong></p>
+<p>又称为解引用，当其后面跟一个指针名或地址时，*给出储存再指针指向地址上的值。</p>
+<p><strong>指针与整数相加</strong></p>
+<p>当使用+运算把指针与整数相加时，整数都会和指针所指向类型的大小（以字节为单位）相乘，然后把结果与初始地址相加。</p>
+<p><strong>递增指针</strong></p>
+<p>让指向数组元素的指针移动至数组的下一个元素。</p>
+<p><strong>指针减去一个整数</strong></p>
+<p>格式必须为“指针-整数”，该整数将乘以指针指向类型的大小（以字节为单位），然后用初始地址减去乘积。</p>
+<p><strong>递减指针</strong></p>
+<p>让数组元素的指针移动至数组的上一个元素。</p>
+<p><strong>指针求差</strong></p>
+<p>可以计算两个指针的差值，即两个元素之间的距离，差值的单位与数组类型的单位相同。</p>
+<h2 id="指针的声明"><a href="#指针的声明" class="headerlink" title="指针的声明"></a>指针的声明</h2><p>声明指针变量时，必须指定指针所指向变量的类型，因为不同的变量类型占用不同的存储空间，一些指针操作要求知道操作对象的大小，并且程序必须知道储存在指定地址上的数据类型。指针的声明如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> * pi;             <span class="comment">// pi是指向int类型变量的指针</span></span><br><span class="line"><span class="keyword">char</span> * pc;            <span class="comment">// pc是指向char类型变量的指针</span></span><br><span class="line"><span class="keyword">float</span> * pf, * pg;     <span class="comment">// pf、pg都是指向float类型变量的指针</span></span><br></pre></td></tr></table></figure>
+<h2 id="使用指针在函数之间通信"><a href="#使用指针在函数之间通信" class="headerlink" title="使用指针在函数之间通信"></a>使用指针在函数之间通信</h2><p>代码示例如下，注意函数调用interchange(&amp;x, &amp;y);传递的不是x和y的值，而是它们的地址。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// swap3.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> x = <span class="number">5</span>, y = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Orginally x = %d and y = %d.\n&quot;</span>, x, y);</span><br><span class="line">    </span><br><span class="line">    interchange(&amp;x, &amp;y);     <span class="comment">// 把地址发送给函数</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Now x = %d and y = %d.\n&quot;</span>, x, y);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">interchange</span><span class="params">(<span class="keyword">int</span> * u, <span class="keyword">int</span> * v)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> temp;</span><br><span class="line">    temp = *u;              <span class="comment">// temp获得u所指向对象的值</span></span><br><span class="line">    *u = *v;</span><br><span class="line">    *v = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="指针和数组"><a href="#指针和数组" class="headerlink" title="指针和数组"></a>指针和数组</h2><p>在某种程度上，数组表示法其实是在变相地使用指针。指针的值是它所指向对象的地址，大部分计算机按字节编址。在指针前面使用*运算符可以得到该指针所指向对象的值。指针加1，则指针的值递增它所指向类型的大小。</p>
+<p>下面第一行代码处，两者都表示数组首元素的内存地址，且三行代码的值都是True。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">flizny == &amp;flizny[<span class="number">0</span>];      <span class="comment">// 数组名是该数组首元素的地址</span></span><br><span class="line">dates + <span class="number">2</span> == &amp;date[<span class="number">2</span>];     <span class="comment">// 相同的地址</span></span><br><span class="line">*(dates + <span class="number">2</span>) == dates[<span class="number">2</span>];  <span class="comment">// 相同的值</span></span><br></pre></td></tr></table></figure>
+<p>由于*运算符的优先级高于+，所以*dates+2相当于(*date)+2，即第一个元素的值+2</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">*(dates +<span class="number">2</span>)     <span class="comment">// dates第三个元素的值</span></span><br><span class="line">*date + <span class="number">2</span>       <span class="comment">// dates第一个元素的值加2</span></span><br></pre></td></tr></table></figure>
+<h2 id="函数、数组和指针c"><a href="#函数、数组和指针c" class="headerlink" title="函数、数组和指针c"></a>函数、数组和指针c</h2><p>函数原型和调用</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> * ar)</span></span>;      <span class="comment">// 对应的函数原型</span></span><br><span class="line">total = sum(marbles);   <span class="comment">// 可能的函数调用</span></span><br></pre></td></tr></table></figure>
+<p>一些等价的函数原型</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> *ar, <span class="keyword">int</span> n)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> *, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> ar[], <span class="keyword">int</span> n)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> [], <span class="keyword">int</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>函数定义中不能省略参数名</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> * ar, <span class="keyword">int</span> n)</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> ar[], <span class="keyword">int</span> n)</span></span>&#123;&#125;     <span class="comment">// 两者是等价的</span></span><br></pre></td></tr></table></figure>
+<p>指针形参</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sump</span><span class="params">(<span class="keyword">int</span> * start, <span class="keyword">int</span> * end)</span></span>;</span><br><span class="line">answer = sump(marbles, marbles + SIZE);</span><br></pre></td></tr></table></figure>
+<p> 一元运算符*和++的优先级相同，单是结合律是从右往左，所以start++先求值，然后才是*start，若要从左往右，则需改成(*start)++，下面的语句是等价的。</p>
+<figure class="highlight cc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">total += *start;     <span class="comment">//把数组元素的值加起来</span></span><br><span class="line">start++;             <span class="comment">// 让指针指向下一个元素</span></span><br><span class="line"><span class="comment">// 上面的两行语句等价于下面的语句</span></span><br><span class="line">total += *start++;</span><br></pre></td></tr></table></figure>
+<p>指针操作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ptr1 = urn;        <span class="comment">// 把一个地址赋给指针</span></span><br><span class="line">ptr2 = &amp;urn[<span class="number">2</span>];    <span class="comment">// 把一个地址赋给指针的另外一种形式</span></span><br><span class="line">ptr1++;            <span class="comment">// 递增指针</span></span><br><span class="line">ptr2--;            <span class="comment">// 递减指针</span></span><br></pre></td></tr></table></figure>
+<p><strong>不要解引用未初始化的指针</strong></p>
+<p>下面的第二行想把5储存在pt指向的位置，但是pt未被初始化，其值是一个随机值，因此程序不知道将5储存在何处。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> * pt;          <span class="comment">// 未初始化的指针</span></span><br><span class="line">*pt = <span class="number">5</span>;           <span class="comment">// 严重的错误</span></span><br><span class="line"><span class="keyword">double</span> * pd;       <span class="comment">// 未初始化的指针</span></span><br><span class="line">*pd = <span class="number">2.4</span>;         <span class="comment">// 严重的错误</span></span><br></pre></td></tr></table></figure>
+<p>指针和多维数组</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> (* pz)[<span class="number">2</span>];     <span class="comment">// pz指向一个内含两个int类型值的数组</span></span><br><span class="line"><span class="keyword">int</span> * pax[<span class="number">2</span>];      <span class="comment">// pax是一个内含两个指针元素的数组，每个元素都指向int的指针</span></span><br></pre></td></tr></table></figure>
+<p>指针的兼容性</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> n = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">double</span> x;</span><br><span class="line"><span class="keyword">int</span> * pl = &amp;n;</span><br><span class="line"><span class="keyword">double</span> * pd = &amp;x;</span><br><span class="line">x = n;               <span class="comment">// 隐式类型转换</span></span><br><span class="line">pd = pl;             <span class="comment">// 编译时错误</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> * pt;</span><br><span class="line"><span class="keyword">int</span> (*pa)[<span class="number">3</span>];</span><br><span class="line"><span class="keyword">int</span> ar1[<span class="number">2</span>][<span class="number">3</span>];</span><br><span class="line"><span class="keyword">int</span> ar2[<span class="number">3</span>][<span class="number">2</span>];</span><br><span class="line"><span class="keyword">int</span> **p2;            <span class="comment">// 一个指向指针的指针</span></span><br><span class="line"></span><br><span class="line">pt = &amp;ar1[<span class="number">0</span>][<span class="number">0</span>];     <span class="comment">// 都是指向int的指针</span></span><br><span class="line">pt = ar1[<span class="number">0</span>];         <span class="comment">// 都是指向int的指针</span></span><br><span class="line">pt = ar1;            <span class="comment">// 无效</span></span><br><span class="line">pa = ar1;            <span class="comment">// 都是指向内含3个int类型元素数组的指针</span></span><br><span class="line">pa = ar2;            <span class="comment">// 无效</span></span><br><span class="line">p2 = &amp;pt;            <span class="comment">// both pointer-to-int *</span></span><br><span class="line">*p2 = ar2[<span class="number">0</span>];        <span class="comment">// 都是指向int的指针</span></span><br><span class="line">p2 = ar2；           <span class="comment">// 无效</span></span><br></pre></td></tr></table></figure>
+  </div>
+  <div class="post-meta">
+    <span class="post-time" style="color:#646060;font-size:13px">2020-11-12</span>
+  </div>
+
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Programming-Language/" rel="tag">Programming Language</a></li></ul>
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+
+<!-- 评论插件 -->
+
+<footer>
+  2021
+  <span class="author">
+    undoingfish
+  </span>
+</footer>
+
+
+    </div>
+  </body>
+</html>
